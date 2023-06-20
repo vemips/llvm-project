@@ -35,6 +35,10 @@
 
 #cmakedefine01 LLVM_ENABLE_CURL
 
+#ifdef LLDB_ENABLE_LZMA
+#	define LZMA_API_IMPORT
+#endif
+
 #cmakedefine01 LLDB_ENABLE_CURSES
 
 #cmakedefine01 CURSES_HAVE_NCURSES_CURSES_H
@@ -42,6 +46,10 @@
 #cmakedefine01 LLDB_ENABLE_LIBEDIT
 
 #cmakedefine01 LLDB_ENABLE_LIBXML2
+
+#ifdef LLDB_ENABLE_LIBXML2
+#	define LIBXML_STATIC 1
+#endif
 
 #cmakedefine01 LLDB_ENABLE_LUA
 

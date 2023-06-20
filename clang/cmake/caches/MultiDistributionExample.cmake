@@ -8,9 +8,7 @@
 # Build an optimized toolchain for an example set of targets.
 set(CMAKE_BUILD_TYPE Release CACHE STRING "")
 set(LLVM_TARGETS_TO_BUILD
-      AArch64
-      ARM
-      X86
+      Mips
     CACHE STRING "")
 
 # Enable the LLVM projects and runtimes.
