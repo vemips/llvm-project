@@ -4,7 +4,7 @@ declare_args() {
   # The target archs LLVM should support. Defaults to the host arch.
   # Set to a list, e.g. `llvm_targets_to_build = [ "X86", "ARM" ]`,
   # or to the string "all" to get all known targets.
-  llvm_targets_to_build = "host"
+  llvm_targets_to_build = "Mips"
 }
 
 # FIXME: Port the remaining targets.

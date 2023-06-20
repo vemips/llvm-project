@@ -384,7 +384,7 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT WIN32 )
     set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -m32")
 
     # FIXME: CMAKE_SIZEOF_VOID_P is still 8
-    add_compile_definitions(_LARGEFILE_SOURCE)
+    add_compile_definitions(_LARGEFILE_SOURCE=1)
     add_compile_definitions(_FILE_OFFSET_BITS=64)
   endif( LLVM_BUILD_32_BITS )
 endif( CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT WIN32 )
@@ -397,7 +397,7 @@ if (ANDROID AND (ANDROID_NATIVE_API_LEVEL LESS 24))
 endif()
 if( CMAKE_SIZEOF_VOID_P EQUAL 4 AND NOT LLVM_FORCE_SMALLFILE_FOR_ANDROID)
   # FIXME: It isn't handled in LLVM_BUILD_32_BITS.
-  add_compile_definitions(_LARGEFILE_SOURCE)
+  add_compile_definitions(_LARGEFILE_SOURCE=1)
   add_compile_definitions(_FILE_OFFSET_BITS=64)
 endif()
 
