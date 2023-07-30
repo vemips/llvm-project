@@ -53,4 +53,9 @@ TARGET_OS(TARGET_OS_NANO, Triple.isWatchOS())
 TARGET_OS(TARGET_IPHONE_SIMULATOR, Triple.isSimulatorEnvironment())
 TARGET_OS(TARGET_OS_UIKITFORMAC, Triple.isMacCatalystEnvironment())
 
+#if LLVM_TARGET_VEMIPS
+TARGET_OS(TARGET_OS_VEMIPS, true)
+TARGET_OS(TARGET_OS_MUSL, TI.getTriple().getEnvironment() == llvm::Triple::Musl || TI.getTriple().getEnvironment() == llvm::Triple::MuslEABI || TI.getTriple().getEnvironment() == llvm::Triple::MuslEABIHF || TI.getTriple().getEnvironment() == llvm::Triple::MuslX32)
+#endif
+
 #undef TARGET_OS

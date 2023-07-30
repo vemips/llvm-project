@@ -14,7 +14,7 @@
 
 #if !defined(__linux__) && !defined(__FreeBSD__) && !defined(__NetBSD__) && \
     !defined(__APPLE__) && !defined(_WIN32) && !defined(__Fuchsia__) &&     \
-    !(defined(__sun__) && defined(__svr4__))
+    !(defined(__sun__) && defined(__svr4__)) && !defined(__MUSL__)
 #  error "This operating system is not supported"
 #endif
 
@@ -25,7 +25,7 @@
 #  include <features.h>
 #endif
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
 #  define SANITIZER_LINUX 1
 #else
 #  define SANITIZER_LINUX 0
@@ -454,7 +454,7 @@
 #  endif
 #endif
 
-#if defined(__thumb__) && defined(__linux__)
+#if defined(__thumb__) && (defined(__linux__) || defined(__MUSL__))
 // Workaround for
 // https://lab.llvm.org/buildbot/#/builders/clang-thumbv7-full-2stage
 // or

@@ -526,7 +526,7 @@ void InitializeInterceptors() {
   (void)(read_iovec);
   (void)(write_iovec);
 
-#    if defined(__linux__)
+#    if defined(__linux__) || defined(__MUSL__)
   INTERCEPT_FUNCTION(__libc_longjmp);
   INTERCEPT_FUNCTION(longjmp);
   INTERCEPT_FUNCTION(siglongjmp);

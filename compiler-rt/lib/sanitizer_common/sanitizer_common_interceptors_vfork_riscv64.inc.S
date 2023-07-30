@@ -1,4 +1,4 @@
-#if (defined(__riscv) && (__riscv_xlen == 64)) && defined(__linux__)
+#if (defined(__riscv) && (__riscv_xlen == 64)) && (defined(__linux__) || defined(__MUSL__))
 
 #include "sanitizer_common/sanitizer_asm.h"
 
@@ -11,7 +11,7 @@ ASM_WRAPPER_NAME(vfork):
         // Save ra in the off-stack spill area.
         // allocate space on stack
         addi    sp, sp, -16
-        // store ra value 
+        // store ra value
         sd      ra, 8(sp)
         call    COMMON_INTERCEPTOR_SPILL_AREA
         // restore previous values from stack

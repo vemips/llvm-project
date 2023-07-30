@@ -895,7 +895,7 @@ TEST(AddressSanitizer, DISABLED_MallocFreeUnwindAndSymbolizeTest) {
 }
 
 static bool TryToSetThreadName(const char *name) {
-#if defined(__linux__) && defined(PR_SET_NAME)
+#if (defined(__linux__) || defined(__MUSL__)) && defined(PR_SET_NAME)
   return 0 == prctl(PR_SET_NAME, (unsigned long)name, 0, 0, 0);
 #else
   return false;

@@ -55,7 +55,7 @@ If 1, close stdout at startup. If 2 close stderr; if 3 close both.
 #include <vector>
 
 // Platform detection. Copied from FuzzerInternal.h
-#ifdef __linux__
+#if defined(__linux__) || defined(__MUSL__)
 #define LIBFUZZER_LINUX 1
 #define LIBFUZZER_APPLE 0
 #define LIBFUZZER_NETBSD 0

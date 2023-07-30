@@ -12,7 +12,7 @@
 
 #include <cstdint>
 #include <mutex>
-#ifdef __linux__
+#if defined(__linux__) || defined(__MUSL__)
 #include <sys/platform/ppc.h>
 #elif defined(__FreeBSD__)
 #include <sys/types.h>

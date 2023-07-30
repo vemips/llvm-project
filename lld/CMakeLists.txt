@@ -175,6 +175,14 @@ if (MSVC)
   add_definitions(-wd4062) # Suppress 'warning C4062: enumerator X in switch of enum Y is not handled' from system header.
 endif()
 
+if (CLANG_HAVE_LIBXML)
+  target_link_libraries(lld PRIVATE LibXml2::LibXml2)
+  target_link_libraries(lld PRIVATE ${LIBLZMA_LIBRARIES})
+  if(WIN32)
+    target_link_libraries(lld PRIVATE wsock32 ws2_32)
+  endif()
+endif()
+
 include_directories(BEFORE
   ${CMAKE_CURRENT_BINARY_DIR}/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include

@@ -566,7 +566,7 @@ uptr internal_unlink(const char *path) {
 }
 
 uptr internal_rename(const char *oldpath, const char *newpath) {
-#    if (defined(__riscv) || defined(__loongarch__)) && defined(__linux__)
+#    if (defined(__riscv) || defined(__loongarch__)) && defined(__linux__) || defined(__MUSL__))
   return internal_syscall(SYSCALL(renameat2), AT_FDCWD, (uptr)oldpath, AT_FDCWD,
                           (uptr)newpath, 0);
 #    elif SANITIZER_LINUX

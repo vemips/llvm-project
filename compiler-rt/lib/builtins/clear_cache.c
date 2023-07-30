@@ -7,7 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "int_lib.h"
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
 #include <assert.h>
 #endif
 #include <stddef.h>
@@ -42,13 +42,13 @@ uintptr_t GetCurrentProcess(void);
 // clang-format on
 #endif
 
-#if defined(__linux__) && defined(__mips__)
+#if (defined(__linux__) || defined(__MUSL__)) && defined(__mips__)
 #include <sys/cachectl.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 #endif
 
-#if defined(__linux__) && defined(__riscv)
+#if (defined(__linux__) || defined(__MUSL__)) && defined(__riscv)
 // to get platform-specific syscall definitions
 #include <linux/unistd.h>
 #endif
@@ -72,7 +72,7 @@ void __clear_cache(void *start, void *end) {
   arg.len = (uintptr_t)end - (uintptr_t)start;
 
   sysarch(ARM_SYNC_ICACHE, &arg);
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(__MUSL__)
 // We used to include asm/unistd.h for the __ARM_NR_cacheflush define, but
 // it also brought many other unused defines, as well as a dependency on
 // kernel headers to be installed.
@@ -91,7 +91,7 @@ void __clear_cache(void *start, void *end) {
 #else
   compilerrt_abort();
 #endif
-#elif defined(__linux__) && defined(__loongarch__)
+#elif (defined(__linux__) || defined(__MUSL__)) && defined(__loongarch__)
   __asm__ volatile("ibar 0");
 #elif defined(__mips__)
   const uintptr_t start_int = (uintptr_t)start;
@@ -181,7 +181,7 @@ void __clear_cache(void *start, void *end) {
 
   for (uintptr_t dword = start_dword; dword < end_dword; dword += dword_size)
     __asm__ volatile("flush %0" : : "r"(dword));
-#elif defined(__riscv) && defined(__linux__)
+#elif defined(__riscv) && (defined(__linux__) || defined(__MUSL__))
   // See: arch/riscv/include/asm/cacheflush.h, arch/riscv/kernel/sys_riscv.c
   register void *start_reg __asm("a0") = start;
   const register void *end_reg __asm("a1") = end;

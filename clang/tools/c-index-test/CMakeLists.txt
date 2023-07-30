@@ -40,6 +40,10 @@ set_target_properties(c-index-test
 # If libxml2 is available, make it available for c-index-test.
 if (CLANG_HAVE_LIBXML)
   target_link_libraries(c-index-test PRIVATE LibXml2::LibXml2)
+  target_link_libraries(c-index-test PRIVATE ${LIBLZMA_LIBRARIES})
+  if(WIN32)
+    target_link_libraries(c-index-test PRIVATE wsock32 ws2_32)
+  endif()
 endif()
 
 if (NOT LLVM_INSTALL_TOOLCHAIN_ONLY)

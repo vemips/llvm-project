@@ -431,7 +431,7 @@ void FreeBSD::AddClangSystemIncludeArgs(
   StringRef CIncludeDirs(C_INCLUDE_DIRS);
   if (CIncludeDirs != "") {
     SmallVector<StringRef, 5> dirs;
-    CIncludeDirs.split(dirs, ":");
+    CIncludeDirs.split(dirs, LLVM_C_INCLUDE_DELIMITER);
     for (StringRef dir : dirs) {
       StringRef Prefix =
           llvm::sys::path::is_absolute(dir) ? StringRef(D.SysRoot) : "";

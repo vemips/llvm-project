@@ -170,7 +170,7 @@ void Hurd::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
   StringRef CIncludeDirs(C_INCLUDE_DIRS);
   if (CIncludeDirs != "") {
     SmallVector<StringRef, 5> Dirs;
-    CIncludeDirs.split(Dirs, ":");
+    CIncludeDirs.split(Dirs, LLVM_C_INCLUDE_DELIMITER);
     for (StringRef Dir : Dirs) {
       StringRef Prefix =
           llvm::sys::path::is_absolute(Dir) ? "" : StringRef(SysRoot);

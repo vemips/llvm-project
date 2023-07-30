@@ -205,12 +205,17 @@ if(LLVM_ENABLE_LIBXML2)
     find_package(LibXml2)
   endif()
   if(LibXml2_FOUND)
+    find_package(LibLZMA REQUIRED)
+
     # Check if libxml2 we found is usable; for example, we may have found a 32-bit
     # library on a 64-bit system which would result in a link-time failure.
     cmake_push_check_state()
     list(APPEND CMAKE_REQUIRED_INCLUDES ${LIBXML2_INCLUDE_DIRS})
-    list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBXML2_LIBRARIES})
-    list(APPEND CMAKE_REQUIRED_DEFINITIONS ${LIBXML2_DEFINITIONS})
+    list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBXML2_LIBRARIES} ${ZLIB_LIBRARIES} ${LIBLZMA_LIBRARIES})
+    if(PURE_WINDOWS)
+      list(APPEND CMAKE_REQUIRED_LIBRARIES Ws2_32.lib)
+    endif()
+    list(APPEND CMAKE_REQUIRED_DEFINITIONS ${LIBXML2_DEFINITIONS} ${ZLIB_DEFINITIONS} ${LIBLZMA_DEFINITIONS})
     check_symbol_exists(xmlReadMemory libxml/xmlreader.h HAVE_LIBXML2)
     cmake_pop_check_state()
     if(LLVM_ENABLE_LIBXML2 STREQUAL FORCE_ON AND NOT HAVE_LIBXML2)
@@ -317,6 +322,9 @@ check_symbol_exists(getpagesize unistd.h HAVE_GETPAGESIZE)
 check_symbol_exists(sysconf unistd.h HAVE_SYSCONF)
 check_symbol_exists(getrusage sys/resource.h HAVE_GETRUSAGE)
 check_symbol_exists(isatty unistd.h HAVE_ISATTY)
+if(NOT HAVE_ISATTY)
+  check_symbol_exists(isatty io.h HAVE_ISATTY)
+endif()
 check_symbol_exists(futimens sys/stat.h HAVE_FUTIMENS)
 check_symbol_exists(futimes sys/time.h HAVE_FUTIMES)
 # AddressSanitizer conflicts with lib/Support/Unix/Signals.inc
@@ -338,10 +346,30 @@ check_symbol_exists(strerror_r string.h HAVE_STRERROR_R)
 check_symbol_exists(strerror_s string.h HAVE_DECL_STRERROR_S)
 check_symbol_exists(setenv stdlib.h HAVE_SETENV)
 if( PURE_WINDOWS )
+  include(CheckCSourceCompiles)
+
   check_symbol_exists(_chsize_s io.h HAVE__CHSIZE_S)
 
+  #check_c_source_compiles("
+  #    #include <malloc.h>
+  #    int main() {
+  #      void* tmp = _alloca(16);
+  #      return 0;
+  #    }
+  #  "
+  #  HAVE__ALLOCA
+  #)
   check_function_exists(_alloca HAVE__ALLOCA)
   check_function_exists(__alloca HAVE___ALLOCA)
+  #check_c_source_compiles("
+  #    extern void __chkstk();
+  #    int main() {
+  #      __chkstk();
+  #      return 0;
+  #    }
+  #  "
+  #  HAVE___CHKSTK
+  #)
   check_function_exists(__chkstk HAVE___CHKSTK)
   check_function_exists(__chkstk_ms HAVE___CHKSTK_MS)
   check_function_exists(___chkstk HAVE____CHKSTK)

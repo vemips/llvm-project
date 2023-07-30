@@ -42,7 +42,7 @@
 #if (defined __linux)
 #undef KMP_OS_LINUX
 #define KMP_OS_LINUX 1
-#elif (defined __linux__)
+#elif (defined __linux__ || defined __TARGET_VEMIPS__)
 #undef KMP_OS_LINUX
 #define KMP_OS_LINUX 1
 #elif defined(__EMSCRIPTEN__)

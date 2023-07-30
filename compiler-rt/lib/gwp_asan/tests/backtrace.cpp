@@ -38,7 +38,7 @@ TEST_P(BacktraceGuardedPoolAllocatorDeathTest, DoubleFree) {
 }
 
 TEST_P(BacktraceGuardedPoolAllocatorDeathTest, UseAfterFree) {
-#if defined(__linux__) && __ARM_ARCH == 7
+#if (defined(__linux__) || defined(__MUSL__)) && __ARM_ARCH == 7
   // Incomplete backtrace on Armv7 Linux
   GTEST_SKIP();
 #endif

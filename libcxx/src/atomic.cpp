@@ -41,6 +41,13 @@
 // OpenBSD has no indirect syscalls
 #  define _LIBCPP_FUTEX(...) futex(__VA_ARGS__)
 
+#elif defined(__MUSL__)
+
+#  if !defined(SYS_futex) && defined(SYS_futex_time64)
+#    define SYS_futex SYS_futex_time64
+#  endif
+#  define _LIBCPP_FUTEX(...) syscall(SYS_futex, __VA_ARGS__)
+
 #else // <- Add other operating systems here
 
 // Baseline needs no new headers

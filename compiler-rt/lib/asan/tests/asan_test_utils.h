@@ -36,7 +36,7 @@
 # include <sys/mman.h>
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__MUSL__)
 # include <sys/prctl.h>
 # include <sys/types.h>
 # include <sys/stat.h>

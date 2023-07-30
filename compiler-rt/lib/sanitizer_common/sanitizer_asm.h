@@ -140,7 +140,7 @@
 #endif
 
 #if defined(__ELF__) && (defined(__GNU__) || defined(__FreeBSD__) || \
-                         defined(__Fuchsia__) || defined(__linux__))
+                         defined(__Fuchsia__) || defined(__linux__) || defined(__MUSL__))
 // clang-format off
 #define NO_EXEC_STACK_DIRECTIVE .section .note.GNU-stack,"",%progbits
 // clang-format on

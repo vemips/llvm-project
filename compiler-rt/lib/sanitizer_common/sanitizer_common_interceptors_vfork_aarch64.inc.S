@@ -1,4 +1,4 @@
-#if defined(__aarch64__) && defined(__linux__)
+#if defined(__aarch64__) && (defined(__linux__) || defined(__MUSL__))
 
 #include "sanitizer_common/sanitizer_asm.h"
 #include "builtins/assembly.h"

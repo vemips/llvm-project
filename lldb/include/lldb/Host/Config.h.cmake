@@ -36,6 +36,9 @@
 #cmakedefine01 LLVM_ENABLE_CURL
 
 #ifdef LLDB_ENABLE_LZMA
+#	ifdef LZMA_API_IMPORT
+#		undef LZMA_API_IMPORT
+#	endif
 #	define LZMA_API_IMPORT
 #endif
 

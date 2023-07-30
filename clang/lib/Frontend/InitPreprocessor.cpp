@@ -1514,6 +1514,35 @@ static void InitializePredefinedMacros(const TargetInfo &TI,
   if (TI.getTriple().isOSBinFormatELF())
     Builder.defineMacro("__ELF__");
 
+#if LLVM_TARGET_VEMIPS
+  Builder.defineMacro("__TARGET_VEMIPS__", "1");
+  Builder.defineMacro("__vemips__", "1");
+  Builder.defineMacro("__vemix__", "1");
+
+  switch (TI.getTriple().getEnvironment()) {
+    case llvm::Triple::Musl:
+    case llvm::Triple::MuslEABI:
+    case llvm::Triple::MuslEABIHF:
+    case llvm::Triple::MuslX32: {
+      // TODO : Get MUSL version
+      static constexpr const int MuslVersionValues[3] = { VEMIPS_MUSL_VERSION_MAJOR, VEMIPS_MUSL_VERSION_MINOR, VEMIPS_MUSL_VERSION_PATCH };
+      Twine MuslVersion = Twine((MuslVersionValues[0] * 10'000) + (MuslVersionValues[1] * 100) + (MuslVersionValues[2]));
+      Builder.defineMacro("__MUSL__", MuslVersion);
+      Builder.defineMacro("__musl__", MuslVersion);
+    }
+    [[fallthrough]];
+    case llvm::Triple::UnknownEnvironment:
+      switch (TI.getTriple().getOS()) {
+        case llvm::Triple::UnknownOS:
+        case llvm::Triple::Linux: {
+          Builder.defineMacro("__ELF__");
+          if (LangOpts.CPlusPlus) {
+            Builder.defineMacro("_GNU_SOURCE");
+          }
+        }
+      }
+  }
+#else
   // Target OS macro definitions.
   if (PPOpts.DefineTargetOSMacros) {
     const llvm::Triple &Triple = TI.getTriple();
@@ -1522,6 +1551,7 @@ static void InitializePredefinedMacros(const TargetInfo &TI,
 #include "clang/Basic/TargetOSMacros.def"
 #undef TARGET_OS
   }
+#endif
 
   // Get other target #defines.
   TI.getTargetDefines(LangOpts, Builder);

@@ -57,6 +57,8 @@
 #elif defined(__APPLE__) || __has_include(<copyfile.h>)
 #  include <copyfile.h>
 #  define _LIBCPP_FILESYSTEM_USE_COPYFILE
+#elif defined(_LIBCPP_HAS_MUSL_LIBC) && _LIBCPP_HAS_MUSL_LIBC
+#  define _LIBCPP_FILESYSTEM_USE_COPY_FILE_RANGE
 #else
 #  define _LIBCPP_FILESYSTEM_USE_FSTREAM
 #endif

@@ -22,6 +22,12 @@
 
 namespace clang {
 namespace driver {
+#if defined(LLVM_TARGET_VEMIPS) && WIN32
+  static constexpr const char LLVM_C_INCLUDE_DELIMITER = ';';
+#else
+  static constexpr const char LLVM_C_INCLUDE_DELIMITER = ':';
+#endif
+
 namespace tools {
 
 void addPathIfExists(const Driver &D, const Twine &Path,

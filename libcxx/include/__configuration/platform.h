@@ -31,7 +31,7 @@
 #endif
 
 // Need to detect which libc we're using if we're on Linux.
-#if defined(__linux__) || defined(__AMDGPU__) || defined(__NVPTX__)
+#if defined(__linux__) || defined(__AMDGPU__) || defined(__NVPTX__) || defined(__MUSL__)
 #  if __has_include(<features.h>)
 #    include <features.h>
 #    if defined(__GLIBC_PREREQ)

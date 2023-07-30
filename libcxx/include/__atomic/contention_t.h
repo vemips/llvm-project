@@ -19,11 +19,11 @@
 
 _LIBCPP_BEGIN_NAMESPACE_STD
 
-#if defined(__linux__) || (defined(_AIX) && !defined(__64BIT__))
+#if defined(__linux__) || defined(__MUSL__) || (defined(_AIX) && !defined(__64BIT__))
 using __cxx_contention_t _LIBCPP_NODEBUG = int32_t;
 #else
 using __cxx_contention_t _LIBCPP_NODEBUG = int64_t;
-#endif // __linux__ || (_AIX && !__64BIT__)
+#endif // __linux__ || __MUSL__ || (_AIX && !__64BIT__)
 
 using __cxx_atomic_contention_t _LIBCPP_NODEBUG = __cxx_atomic_impl<__cxx_contention_t>;
 
