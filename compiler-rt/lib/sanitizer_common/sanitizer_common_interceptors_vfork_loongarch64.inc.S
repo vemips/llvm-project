@@ -1,4 +1,4 @@
-#if defined(__loongarch_lp64) && defined(__linux__)
+#if defined(__loongarch_lp64) && (defined(__linux__) || defined(__MUSL__))
 
 #include "sanitizer_common/sanitizer_asm.h"
 

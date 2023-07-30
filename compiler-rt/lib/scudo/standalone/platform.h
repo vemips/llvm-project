@@ -12,7 +12,7 @@
 // Transitive includes of stdint.h specify some of the defines checked below.
 #include <stdint.h>
 
-#if defined(__linux__) && !defined(__TRUSTY__)
+#if (defined(__linux__) || defined(__MUSL__)) && !defined(__TRUSTY__)
 #define SCUDO_LINUX 1
 #else
 #define SCUDO_LINUX 0

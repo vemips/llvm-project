@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
 #include <signal.h>
 #include <sys/prctl.h>
 #endif
@@ -325,7 +325,7 @@ COMPILER_RT_VISIBILITY const char *lprofFindLastDirSeparator(const char *Path) {
 }
 
 COMPILER_RT_VISIBILITY int lprofSuspendSigKill(void) {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
   int PDeachSig = 0;
   /* Temporarily suspend getting SIGKILL upon exit of the parent process. */
   if (prctl(PR_GET_PDEATHSIG, &PDeachSig) == 0 && PDeachSig == SIGKILL)
@@ -343,7 +343,7 @@ COMPILER_RT_VISIBILITY int lprofSuspendSigKill(void) {
 }
 
 COMPILER_RT_VISIBILITY void lprofRestoreSigKill(void) {
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
   prctl(PR_SET_PDEATHSIG, SIGKILL);
 #elif defined(__FreeBSD__)
   int PEnableSig = SIGKILL;

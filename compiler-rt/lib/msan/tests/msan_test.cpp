@@ -33,7 +33,7 @@ int shmdt(const void *);
 }
 #endif
 
-#if defined(__linux__) && !defined(__GLIBC__) && !defined(__ANDROID__)
+#if (defined(__linux__) && !defined(__GLIBC__) && !defined(__ANDROID__)) || defined(__MUSL__)
 #define MUSL 1
 #endif
 
@@ -98,7 +98,7 @@ void *mempcpy(void *dest, const void *src, size_t n);
 # include <sys/vfs.h>
 # include <mntent.h>
 # include <netinet/ether.h>
-# if defined(__linux__)
+# if defined(__linux__) || defined(__MUSL__)
 #  include <sys/uio.h>
 # endif
 #endif
@@ -2515,7 +2515,7 @@ void SigactionHandler(int signo, siginfo_t* si, void* uc) {
 #ifdef _UC_MACHINE_PC
   EXPECT_NOT_POISONED(_UC_MACHINE_PC((ucontext_t*)uc));
 #else
-# if __linux__
+# if __linux__ || __MUSL__
 #  if defined(__x86_64__)
   EXPECT_NOT_POISONED(((ucontext_t*)uc)->uc_mcontext.gregs[REG_RIP]);
 #  elif defined(__i386__)

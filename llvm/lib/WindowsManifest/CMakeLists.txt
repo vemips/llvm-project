@@ -2,6 +2,10 @@ include(GetLibraryName)
 
 if(LLVM_ENABLE_LIBXML2)
   set(imported_libs LibXml2::LibXml2)
+  list(APPEND imported_libs ${LIBLZMA_LIBRARIES})
+  if(WIN32)
+    list(APPEND imported_libs wsock32 ws2_32)
+  endif()
 endif()
 
 add_llvm_component_library(LLVMWindowsManifest

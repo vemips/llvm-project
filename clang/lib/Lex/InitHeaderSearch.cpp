@@ -198,6 +198,7 @@ bool InitHeaderSearch::AddGnuCPlusPlusIncludePaths(StringRef Base,
   // Add the base dir
   bool IsBaseFound = AddPath(Base, CXXSystem, false);
 
+#ifndef LLVM_TARGET_VEMIPS
   // Add the multilib dirs
   llvm::Triple::ArchType arch = triple.getArch();
   bool is64bit = arch == llvm::Triple::ppc64 || arch == llvm::Triple::x86_64;
@@ -208,18 +209,21 @@ bool InitHeaderSearch::AddGnuCPlusPlusIncludePaths(StringRef Base,
 
   // Add the backward dir
   AddPath(Base + "/backward", CXXSystem, false);
+#endif
   return IsBaseFound;
 }
 
 void InitHeaderSearch::AddMinGWCPlusPlusIncludePaths(StringRef Base,
                                                      StringRef Arch,
                                                      StringRef Version) {
+#ifndef LLVM_TARGET_VEMIPS
   AddPath(Base + "/" + Arch + "/" + Version + "/include/c++",
           CXXSystem, false);
   AddPath(Base + "/" + Arch + "/" + Version + "/include/c++/" + Arch,
           CXXSystem, false);
   AddPath(Base + "/" + Arch + "/" + Version + "/include/c++/backward",
           CXXSystem, false);
+#endif
 }
 
 void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
@@ -227,6 +231,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
   if (!ShouldAddDefaultIncludePaths(triple))
     llvm_unreachable("Include management is handled in the driver.");
 
+#ifndef LLVM_TARGET_VEMIPS
   llvm::Triple::OSType os = triple.getOS();
 
   if (HSOpts.UseStandardSystemIncludes) {
@@ -247,6 +252,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
       break;
     }
   }
+#endif
 
   // Builtin includes use #include_next directives and should be positioned
   // just prior C include dirs.
@@ -267,12 +273,19 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
   StringRef CIncludeDirs(C_INCLUDE_DIRS);
   if (CIncludeDirs != "") {
     SmallVector<StringRef, 5> dirs;
-    CIncludeDirs.split(dirs, ":");
-    for (StringRef dir : dirs)
-      AddPath(dir, ExternCSystem, false);
+#if defined(LLVM_TARGET_VEMIPS) && WIN32
+    CIncludeDirs.split(dirs, ';');
+#else
+    CIncludeDirs.split(dirs, ':');
+#endif
+    for (StringRef dir : dirs) {
+      test_file.formatln("AddPath: %s", dir.str());
+      AddUnmappedPath(dir, ExternCSystem, false);
+    }
     return;
   }
 
+#if !defined(LLVM_TARGET_VEMIPS)
   switch (os) {
   case llvm::Triple::CloudABI: {
     // <sysroot>/<triple>/include
@@ -368,6 +381,7 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
     AddPath("/usr/include", ExternCSystem, false);
     break;
   }
+#endif
 }
 
 void InitHeaderSearch::AddDefaultCPlusPlusIncludePaths(
@@ -376,6 +390,7 @@ void InitHeaderSearch::AddDefaultCPlusPlusIncludePaths(
   if (!ShouldAddDefaultIncludePaths(triple))
     llvm_unreachable("Include management is handled in the driver.");
 
+#if !defined(LLVM_TARGET_VEMIPS)
   // FIXME: temporary hack: hard-coded paths.
   llvm::Triple::OSType os = triple.getOS();
   switch (os) {
@@ -402,10 +417,12 @@ void InitHeaderSearch::AddDefaultCPlusPlusIncludePaths(
   default:
     break;
   }
+#endif
 }
 
 bool InitHeaderSearch::ShouldAddDefaultIncludePaths(
     const llvm::Triple &triple) {
+#if !defined(LLVM_TARGET_VEMIPS)
   switch (triple.getOS()) {
   case llvm::Triple::AIX:
   case llvm::Triple::Emscripten:
@@ -433,6 +450,7 @@ bool InitHeaderSearch::ShouldAddDefaultIncludePaths(
   default:
     break;
   }
+#endif
 
   return true; // Everything else uses AddDefaultIncludePaths().
 }
@@ -448,6 +466,7 @@ void InitHeaderSearch::AddDefaultIncludePaths(
   if (!ShouldAddDefaultIncludePaths(triple))
     return;
 
+#if !defined(LLVM_TARGET_VEMIPS)
   // NOTE: some additional header search logic is handled in the driver for
   // Darwin.
   if (triple.isOSDarwin()) {
@@ -462,11 +481,18 @@ void InitHeaderSearch::AddDefaultIncludePaths(
     }
     return;
   }
+#endif
 
   if (Lang.CPlusPlus && !Lang.AsmPreprocessor &&
       HSOpts.UseStandardCXXIncludes && HSOpts.UseStandardSystemIncludes) {
     if (HSOpts.UseLibcxx) {
+#if defined(LLVM_TARGET_VEMIPS)
+      SmallString<128> P = StringRef(HSOpts.ResourceDir);
+      llvm::sys::path::append(P, "include/c++/v1");
+      AddUnmappedPath(P, CXXSystem, false);
+#else
       AddPath("/usr/include/c++/v1", CXXSystem, false);
+#endif
     } else {
       AddDefaultCPlusPlusIncludePaths(Lang, triple, HSOpts);
     }

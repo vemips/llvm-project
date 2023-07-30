@@ -237,7 +237,7 @@ void InitializeInterceptors() {
   CHECK_EQ(inited, 0);
 
 #if HWASAN_WITH_INTERCEPTORS
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
   INTERCEPT_FUNCTION(__libc_longjmp);
   INTERCEPT_FUNCTION(longjmp);
   INTERCEPT_FUNCTION(siglongjmp);

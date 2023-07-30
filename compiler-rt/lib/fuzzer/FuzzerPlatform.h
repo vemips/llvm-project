@@ -12,7 +12,7 @@
 #define LLVM_FUZZER_PLATFORM_H
 
 // Platform detection.
-#ifdef __linux__
+#if defined(__linux__) || defined(__MUSL__)
 #define LIBFUZZER_APPLE 0
 #define LIBFUZZER_FUCHSIA 0
 #define LIBFUZZER_LINUX 1

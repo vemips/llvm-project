@@ -2344,7 +2344,7 @@ void DarwinClang::AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs
   llvm::StringRef CIncludeDirs(C_INCLUDE_DIRS);
   if (!CIncludeDirs.empty()) {
     llvm::SmallVector<llvm::StringRef, 5> dirs;
-    CIncludeDirs.split(dirs, ":");
+    CIncludeDirs.split(dirs, LLVM_C_INCLUDE_DELIMITER);
     for (llvm::StringRef dir : dirs) {
       llvm::StringRef Prefix =
           llvm::sys::path::is_absolute(dir) ? "" : llvm::StringRef(Sysroot);

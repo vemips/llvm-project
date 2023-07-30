@@ -26,7 +26,7 @@
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
 #include <sys/types.h>
 #endif
 #endif

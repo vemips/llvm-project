@@ -137,7 +137,7 @@ static bool isAArch64BareMetal(const llvm::Triple &Triple) {
   if (Triple.getOS() != llvm::Triple::UnknownOS)
     return false;
 
-  return Triple.getEnvironmentName() == "elf";
+  return Triple.getEnvironmentName() == "elf" || Triple.getEnvironmentName() == "musl";
 }
 
 static bool isRISCVBareMetal(const llvm::Triple &Triple) {
@@ -150,7 +150,20 @@ static bool isRISCVBareMetal(const llvm::Triple &Triple) {
   if (Triple.getOS() != llvm::Triple::UnknownOS)
     return false;
 
-  return Triple.getEnvironmentName() == "elf";
+  return Triple.getEnvironmentName() == "elf" || Triple.getEnvironmentName() == "musl";
+}
+
+static bool isMIPSBareMetal(const llvm::Triple &Triple) {
+  if (!Triple.isMIPS())
+    return false;
+
+  if (Triple.getVendor() != llvm::Triple::UnknownVendor)
+    return false;
+
+  if (Triple.getOS() != llvm::Triple::UnknownOS)
+    return false;
+
+  return Triple.getEnvironmentName() == "elf" || Triple.getEnvironmentName() == "musl";
 }
 
 void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
@@ -166,7 +179,7 @@ void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
 
 bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
   return isARMBareMetal(Triple) || isAArch64BareMetal(Triple) ||
-         isRISCVBareMetal(Triple);
+         isRISCVBareMetal(Triple) || isMIPSBareMetal(Triple);
 }
 
 Tool *BareMetal::buildLinker() const {
@@ -208,7 +221,9 @@ void BareMetal::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
 void BareMetal::addClangTargetOptions(const ArgList &DriverArgs,
                                       ArgStringList &CC1Args,
                                       Action::OffloadKind) const {
+#ifndef LLVM_TARGET_VEMIPS
   CC1Args.push_back("-nostdsysteminc");
+#endif
 }
 
 void BareMetal::AddClangCXXStdlibIncludeArgs(const ArgList &DriverArgs,

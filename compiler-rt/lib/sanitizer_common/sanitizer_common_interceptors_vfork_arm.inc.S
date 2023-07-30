@@ -1,4 +1,4 @@
-#if defined(__arm__) && defined(__linux__)
+#if defined(__arm__) && (defined(__linux__) || defined(__MUSL__))
 
 #include "sanitizer_common/sanitizer_asm.h"
 

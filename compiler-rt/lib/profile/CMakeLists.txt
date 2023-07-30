@@ -23,7 +23,7 @@ int main() {
 " COMPILER_RT_TARGET_HAS_ATOMICS)
 
 CHECK_CXX_SOURCE_COMPILES("
-#if defined(__linux__)
+#if defined(__linux__) || defined(__MUSL__)
 #include <unistd.h>
 #endif
 #include <fcntl.h>

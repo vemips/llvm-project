@@ -244,7 +244,7 @@ void CmpOOBTestCommon() {
 TEST(AddressSanitizer, MemCmpOOBTest) { CmpOOBTestCommon<memcmp>(); }
 
 TEST(AddressSanitizer, BCmpOOBTest) {
-#if (defined(__linux__) && !defined(__ANDROID__) && defined(_GNU_SOURCE)) || \
+#if ((defined(__linux__) || defined(__TARGET_VEMIPS__)) && !defined(__ANDROID__) && defined(_GNU_SOURCE)) || \
     defined(__NetBSD__) || defined(__FreeBSD__)
   CmpOOBTestCommon<bcmp>();
 #endif
