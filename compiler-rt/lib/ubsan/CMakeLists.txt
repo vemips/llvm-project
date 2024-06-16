@@ -154,7 +154,7 @@ else()
     ADDITIONAL_HEADERS ${UBSAN_HEADERS}
     CFLAGS ${UBSAN_CXXFLAGS})
 
-  if (WIN32)
+  if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
     add_compiler_rt_object_libraries(UbsanWeakInterception
       ${SANITIZER_COMMON_SUPPORTED_OS}
       ARCHS ${UBSAN_SUPPORTED_ARCH}

@@ -90,7 +90,7 @@ if (LIBCXX_ENABLE_LOCALIZATION)
     )
 endif()
 
-if(WIN32)
+if(LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   list(APPEND LIBCXX_SOURCES
     support/win32/locale_win32.cpp
     support/win32/support.cpp
@@ -136,7 +136,7 @@ endif()
 # Add all the headers to the project for IDEs.
 if (LIBCXX_CONFIGURE_IDE)
   file(GLOB_RECURSE LIBCXX_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/*)
-  if(WIN32)
+  if(LLVM_TARGET_TRIPLE MATCHES ".+-win32")
     file( GLOB LIBCXX_WIN32_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../include/__support/win32/*.h)
     list(APPEND LIBCXX_HEADERS ${LIBCXX_WIN32_HEADERS})
   endif()
@@ -278,7 +278,7 @@ if (LIBCXX_ENABLE_SHARED)
   endif()
 
   list(APPEND LIBCXX_BUILD_TARGETS "cxx_shared")
-  if(WIN32 AND NOT MINGW AND NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
+  if(LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND NOT MINGW AND NOT "${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     # Since we most likely do not have a mt.exe replacement, disable the
     # manifest bundling.  This allows a normal cmake invocation to pass which
     # will attempt to use the manifest tool to generate the bundled manifest

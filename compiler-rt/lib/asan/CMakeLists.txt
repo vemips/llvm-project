@@ -32,7 +32,7 @@ set(ASAN_SOURCES
   asan_win.cpp
   )
 
-if (NOT WIN32 AND NOT APPLE)
+if (NOT LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND NOT APPLE)
   list(APPEND ASAN_SOURCES
     asan_interceptors_vfork.S
     )
@@ -46,7 +46,7 @@ set(ASAN_STATIC_SOURCES
   asan_rtl_static.cpp
   )
 
-if (NOT WIN32 AND NOT APPLE)
+if (NOT LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND NOT APPLE)
   list(APPEND ASAN_STATIC_SOURCES
     asan_rtl_x86_64.S
   )
@@ -110,7 +110,9 @@ endif()
 
 set(ASAN_DYNAMIC_DEFINITIONS
   ${ASAN_COMMON_DEFINITIONS} ASAN_DYNAMIC=1)
-append_list_if(WIN32 INTERCEPTION_DYNAMIC_CRT ASAN_DYNAMIC_DEFINITIONS)
+if(LLVM_TARGET_TRIPLE MATCHES ".+-win32")
+  append_list_if(WIN32 INTERCEPTION_DYNAMIC_CRT ASAN_DYNAMIC_DEFINITIONS)
+endif()
 
 set(ASAN_DYNAMIC_CFLAGS ${ASAN_CFLAGS})
 append_list_if(COMPILER_RT_HAS_FTLS_MODEL_INITIAL_EXEC
@@ -275,7 +277,7 @@ else()
     endif()
 
     set(ASAN_DYNAMIC_WEAK_INTERCEPTION)
-    if (WIN32)
+    if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
       add_compiler_rt_object_libraries(AsanWeakInterception
         ${SANITIZER_COMMON_SUPPORTED_OS}
         ARCHS ${arch}
@@ -320,7 +322,7 @@ else()
       add_dependencies(asan clang_rt.asan-${arch}-symbols)
     endif()
 
-    if (WIN32)
+    if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
       add_compiler_rt_object_libraries(AsanDllThunk
         ${SANITIZER_COMMON_SUPPORTED_OS}
         ARCHS ${arch}

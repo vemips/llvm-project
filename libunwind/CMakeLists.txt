@@ -89,7 +89,7 @@ if (LIBUNWIND_ENABLE_CET AND MSVC)
   message(FATAL_ERROR "libunwind CET support is not available for MSVC!")
 endif()
 
-if (WIN32)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   set(LIBUNWIND_DEFAULT_HIDE_SYMBOLS TRUE)
 else()
   set(LIBUNWIND_DEFAULT_HIDE_SYMBOLS FALSE)
@@ -190,7 +190,7 @@ add_compile_flags_if_supported(-Wundef)
 
 add_compile_flags_if_supported(-Wno-suggest-override)
 
-if (WIN32)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   # The headers lack matching dllexport attributes (_LIBUNWIND_EXPORT);
   # silence the warning instead of cluttering the headers (which aren't
   # necessarily the ones that the callers will use anyway) with the

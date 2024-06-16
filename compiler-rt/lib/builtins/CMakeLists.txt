@@ -326,7 +326,7 @@ if (NOT MSVC)
   # Darwin x86_64 Haswell
   set(x86_64h_SOURCES ${x86_64_SOURCES})
 
-  if (WIN32)
+  if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
     set(x86_64_SOURCES
       ${x86_64_SOURCES}
       x86_64/chkstk.S
@@ -360,7 +360,7 @@ if (NOT MSVC)
     )
   endif()
 
-  if (WIN32)
+  if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
     set(i386_SOURCES
       ${i386_SOURCES}
       i386/chkstk.S
@@ -533,7 +533,7 @@ if(MINGW)
   set(thumb1_SOURCES
     ${thumb1_base_SOURCES}
   )
-elseif(NOT WIN32)
+elseif(NOT LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   # TODO the EABI sources should only be added to EABI targets
   set(arm_SOURCES
     ${arm_or_thumb2_base_SOURCES}

@@ -290,7 +290,7 @@ add_compiler_rt_object_libraries(RTSanitizerCommonSymbolizerNoHooks
   CFLAGS ${SANITIZER_NO_WEAK_HOOKS_CFLAGS}
   DEFS ${SANITIZER_COMMON_DEFINITIONS})
 
-if(WIN32)
+if(LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   add_compiler_rt_object_libraries(SanitizerCommonWeakInterception
     ${SANITIZER_COMMON_SUPPORTED_OS}
     ARCHS ${SANITIZER_COMMON_SUPPORTED_ARCH}

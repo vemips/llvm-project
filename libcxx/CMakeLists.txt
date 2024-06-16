@@ -56,7 +56,7 @@ option(LIBCXX_ENABLE_ASSERTIONS
 option(LIBCXX_ENABLE_SHARED "Build libc++ as a shared library." ON)
 option(LIBCXX_ENABLE_STATIC "Build libc++ as a static library." ON)
 set(ENABLE_FILESYSTEM_DEFAULT ON)
-if (WIN32 AND NOT MINGW)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND NOT MINGW)
   # Filesystem is buildable for windows, but it requires __int128 helper
   # functions, that currently are provided by libgcc or compiler_rt builtins.
   # These are available in MinGW environments, but not currently in MSVC
@@ -107,9 +107,9 @@ option(LIBCXX_ENABLE_CLANG_TIDY "Whether to compile and run clang-tidy checks" O
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(LIBCXX_DEFAULT_TEST_CONFIG "llvm-libc++-shared-gcc.cfg.in")
-elseif(MINGW)
+elseif(LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND MINGW)
   set(LIBCXX_DEFAULT_TEST_CONFIG "llvm-libc++-mingw.cfg.in")
-elseif(WIN32) # clang-cl
+elseif(LLVM_TARGET_TRIPLE MATCHES ".+-win32") # clang-cl
   if (LIBCXX_ENABLE_SHARED)
     set(LIBCXX_DEFAULT_TEST_CONFIG "llvm-libc++-shared-clangcl.cfg.in")
   else()
@@ -305,7 +305,7 @@ option(LIBCXX_CONFIGURE_IDE "Configure libcxx for use within an IDE"
       ${LIBCXX_CONFIGURE_IDE_DEFAULT})
 
 set(LIBCXX_HERMETIC_STATIC_LIBRARY_DEFAULT OFF)
-if (WIN32)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   set(LIBCXX_HERMETIC_STATIC_LIBRARY_DEFAULT ON)
 endif()
 option(LIBCXX_HERMETIC_STATIC_LIBRARY
@@ -801,7 +801,7 @@ endfunction()
 
 # Windows-related flags =======================================================
 function(cxx_add_windows_flags target)
-  if(WIN32 AND NOT MINGW)
+  if(LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND NOT MINGW)
     target_compile_definitions(${target} PRIVATE
                                  # Ignore the -MSC_VER mismatch, as we may build
                                  # with a different compatibility version.
@@ -889,12 +889,12 @@ endif()
 # By default libc++ on Windows expects to use a shared library, which requires
 # the headers to use DLL import/export semantics. However when building a
 # static library only we modify the headers to disable DLL import/export.
-if (DEFINED WIN32 AND LIBCXX_ENABLE_STATIC AND NOT LIBCXX_ENABLE_SHARED)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND LIBCXX_ENABLE_STATIC AND NOT LIBCXX_ENABLE_SHARED)
   message(STATUS "Generating custom __config for non-DLL Windows build")
   config_define(ON _LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS)
 endif()
 
-if (WIN32 AND LIBCXX_ENABLE_STATIC_ABI_LIBRARY)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND LIBCXX_ENABLE_STATIC_ABI_LIBRARY)
   # If linking libcxxabi statically into libcxx, skip the dllimport attributes
   # on symbols we refer to from libcxxabi.
   add_definitions(-D_LIBCXXABI_DISABLE_VISIBILITY_ANNOTATIONS)

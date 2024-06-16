@@ -77,7 +77,7 @@ set(PROFILE_HEADERS
   WindowsMMap.h
   )
 
-if(WIN32)
+if(LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   list(APPEND PROFILE_SOURCES
     WindowsMMap.c
   )

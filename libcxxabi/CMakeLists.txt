@@ -140,7 +140,7 @@ set(LIBCXXABI_LIBCXX_INCLUDES "" CACHE PATH
     "Specify path to libc++ includes.")
 
 set(LIBCXXABI_HERMETIC_STATIC_LIBRARY_DEFAULT OFF)
-if (WIN32)
+if (LLVM_TARGET_TRIPLE MATCHES ".+-win32")
   set(LIBCXXABI_HERMETIC_STATIC_LIBRARY_DEFAULT ON)
 endif()
 option(LIBCXXABI_HERMETIC_STATIC_LIBRARY
@@ -148,9 +148,9 @@ option(LIBCXXABI_HERMETIC_STATIC_LIBRARY
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(LIBCXXABI_DEFAULT_TEST_CONFIG "llvm-libc++abi-shared-gcc.cfg.in")
-elseif(MINGW)
+elseif(LLVM_TARGET_TRIPLE MATCHES ".+-win32" AND MINGW)
   set(LIBCXXABI_DEFAULT_TEST_CONFIG "llvm-libc++abi-mingw.cfg.in")
-elseif(WIN32) # clang-cl
+elseif(LLVM_TARGET_TRIPLE MATCHES ".+-win32") # clang-cl
   if (LIBCXXABI_ENABLE_SHARED)
     set(LIBCXXABI_DEFAULT_TEST_CONFIG "llvm-libc++abi-shared-clangcl.cfg.in")
   else()

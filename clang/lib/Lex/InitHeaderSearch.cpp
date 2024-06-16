@@ -279,7 +279,6 @@ void InitHeaderSearch::AddDefaultCIncludePaths(const llvm::Triple &triple,
     CIncludeDirs.split(dirs, ':');
 #endif
     for (StringRef dir : dirs) {
-      test_file.formatln("AddPath: %s", dir.str());
       AddUnmappedPath(dir, ExternCSystem, false);
     }
     return;
