@@ -1930,6 +1930,7 @@ void RegisterCoalescer::updateRegDefsUses(Register SrcReg, Register DstReg,
       Reads = DstInt->liveAt(LIS->getInstructionIndex(*UseMI));
 
     bool FullDef = true;
+    bool DeadDef = false;
 
     // Replace SrcReg with DstReg in all UseMI operands.
     for (unsigned Op : Ops) {
@@ -1941,6 +1942,7 @@ void RegisterCoalescer::updateRegDefsUses(Register SrcReg, Register DstReg,
       if (SubIdx && MO.isDef()) {
         MO.setIsUndef(!Reads);
         FullDef = false;
+        DeadDef = MO.isDead();
       }
 
       // A subreg use of a partially undef (super) register may be a complete
@@ -1974,7 +1976,7 @@ void RegisterCoalescer::updateRegDefsUses(Register SrcReg, Register DstReg,
         MO.substVirtReg(DstReg, SubIdx, *TRI);
     }
 
-    if (IsSubregToReg && !FullDef) {
+    if (IsSubregToReg && !FullDef && !DeadDef) {
       // If the coalesed instruction doesn't fully define the register, we need
       // to preserve the original super register liveness for SUBREG_TO_REG.
       //

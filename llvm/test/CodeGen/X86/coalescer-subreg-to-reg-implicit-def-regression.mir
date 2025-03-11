@@ -27,7 +27,7 @@ body: |
   ; CHECK-NEXT:   MOVAPSmr $noreg, 1, $noreg, 16, $noreg, [[V_SET0_]]
   ; CHECK-NEXT:   MOVAPSmr $noreg, 1, $noreg, 0, $noreg, [[V_SET0_]]
   ; CHECK-NEXT:   dead [[DEF1:%[0-9]+]]:gr32 = IMPLICIT_DEF
-  ; CHECK-NEXT:   dead [[DEF:%[0-9]+]].sub_32bit:gr64_with_sub_8bit = OR32ri [[DEF]].sub_32bit, 1, implicit-def $eflags, implicit-def [[DEF]]
+  ; CHECK-NEXT:   dead [[DEF:%[0-9]+]].sub_32bit:gr64_with_sub_8bit = OR32ri [[DEF]].sub_32bit, 1, implicit-def $eflags
   ; CHECK-NEXT:   JMP_1 %bb.3
   ; CHECK-NEXT: {{  $}}
   ; CHECK-NEXT: bb.3:
