@@ -1982,6 +1982,9 @@ void RegisterCoalescer::updateRegDefsUses(Register SrcReg, Register DstReg,
       // but it introduces liveness for other subregisters. Downstream users may
       // have been relying on those bits, so we need to ensure their liveness is
       // captured with a def of other lanes.
+      //
+      // The implicit-def only needs adding if we track subregister liveness
+      // for this register, otherwise there is no point.
 
       if (DstInt && MRI->shouldTrackSubRegLiveness(DstReg)) {
         assert(DstInt->hasSubRanges() &&
@@ -1994,10 +1997,10 @@ void RegisterCoalescer::updateRegDefsUses(Register SrcReg, Register DstReg,
           DstInt->createSubRangeFrom(Allocator, UnusedLanes, *DstInt);
           DefinedLanes |= UnusedLanes;
         }
-      }
 
-      MachineInstrBuilder MIB(*MF, UseMI);
-      MIB.addReg(DstReg, RegState::ImplicitDefine);
+        MachineInstrBuilder MIB(*MF, UseMI);
+        MIB.addReg(DstReg, RegState::ImplicitDefine);
+      }
     }
 
     LLVM_DEBUG({
