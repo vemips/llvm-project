@@ -284,29 +284,11 @@ uint64_t GOFFWriter::writeObject() {
   return OS.getWrittenSize();
 }
 
-namespace {
+GOFFObjectWriter::GOFFObjectWriter(
+    std::unique_ptr<MCGOFFObjectTargetWriter> MOTW, raw_pwrite_stream &OS)
+    : TargetObjectWriter(std::move(MOTW)), OS(OS) {}
 
-class GOFFObjectWriter : public MCObjectWriter {
-  // The target specific GOFF writer instance.
-  std::unique_ptr<MCGOFFObjectTargetWriter> TargetObjectWriter;
-
-  // The stream used to write the GOFF records.
-  raw_pwrite_stream &OS;
-
-public:
-  GOFFObjectWriter(std::unique_ptr<MCGOFFObjectTargetWriter> MOTW,
-                   raw_pwrite_stream &OS)
-      : TargetObjectWriter(std::move(MOTW)), OS(OS) {}
-
-  ~GOFFObjectWriter() override {}
-
-  // Implementation of the MCObjectWriter interface.
-  void recordRelocation(MCAssembler &Asm, const MCFragment *Fragment,
-                        const MCFixup &Fixup, MCValue Target,
-                        uint64_t &FixedValue) override {}
-  uint64_t writeObject(MCAssembler &Asm) override;
-};
-} // end anonymous namespace
+GOFFObjectWriter::~GOFFObjectWriter() {}
 
 uint64_t GOFFObjectWriter::writeObject(MCAssembler &Asm) {
   uint64_t Size = GOFFWriter(OS, Asm).writeObject();
