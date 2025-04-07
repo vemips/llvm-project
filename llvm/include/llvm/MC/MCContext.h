@@ -624,14 +624,11 @@ private:
 
 public:
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
-                                GOFF::SDAttr SDAttributes,
-                                MCSection *Parent = nullptr);
+                                GOFF::SDAttr SDAttributes);
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
-                                GOFF::EDAttr EDAttributes,
-                                MCSection *Parent = nullptr);
+                                GOFF::EDAttr EDAttributes, MCSection *Parent);
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
-                                GOFF::PRAttr PRAttributes,
-                                MCSection *Parent = nullptr);
+                                GOFF::PRAttr PRAttributes, MCSection *Parent);
 
   MCSectionCOFF *getCOFFSection(StringRef Section, unsigned Characteristics,
                                 StringRef COMDATSymName, int Selection,

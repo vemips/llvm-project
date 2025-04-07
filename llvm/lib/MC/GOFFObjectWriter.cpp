@@ -308,8 +308,7 @@ void GOFFWriter::defineSectionSymbols(const MCSectionGOFF &Section) {
   if (Section.isED()) {
     GOFFSymbol ED(Section.getName(), Section.getId(),
                   Section.getParent()->getId(), Section.getEDAttributes());
-    if (Section.requiresLength())
-      ED.SectionLength = Asm.getSectionAddressSize(Section);
+    ED.SectionLength = Asm.getSectionAddressSize(Section);
     writeSymbol(ED);
   }
 
@@ -331,7 +330,9 @@ void GOFFWriter::defineSectionSymbols(const MCSectionGOFF &Section) {
 }
 
 void GOFFWriter::defineLabel(const MCSymbolGOFF &Symbol) {
-  GOFFSymbol LD(Symbol.getName(), ++EsdIdCounter, 0, Symbol.getLDAttributes());
+  GOFFSymbol LD(Symbol.getName(), ++EsdIdCounter,
+                static_cast<MCSectionGOFF &>(Symbol.getSection()).getId(),
+                Symbol.getLDAttributes());
   if (Symbol.getADA())
     LD.ADAEsdId = Symbol.getADA()->getId();
   writeSymbol(LD);
@@ -351,6 +352,7 @@ void GOFFWriter::defineSymbols() {
       continue;
     auto &Symbol = cast<MCSymbolGOFF>(Sym);
     if (Symbol.hasLDAttributes()) {
+      defineLabel(Symbol);
     }
   }
 }

@@ -231,10 +231,8 @@ protected:
 
   // GOFF specific sections.
   MCSection *RootSDSection = nullptr;
-  MCSection *PPA2ListEDSection = nullptr;
-  MCSection *PPA2ListPRSection = nullptr;
-  MCSection *ADAEDSection = nullptr;
-  MCSection *ADAPRSection = nullptr;
+  MCSection *PPA2ListSection = nullptr;
+  MCSection *ADASection = nullptr;
   MCSection *IDRLSection = nullptr;
 
   // XCOFF specific sections
@@ -439,11 +437,8 @@ public:
   MCSection *getGLJMPSection() const { return GLJMPSection; }
 
   // GOFF specific sections.
-  MCSection *getRootSDSection() const { return RootSDSection; }
-  MCSection *getPPA2ListEDSection() const { return PPA2ListEDSection; }
-  MCSection *getPPA2ListSection() const { return PPA2ListPRSection; }
-  MCSection *getADAEDSection() const { return ADAEDSection; }
-  MCSection *getADASection() const { return ADAPRSection; }
+  MCSection *getPPA2ListSection() const { return PPA2ListSection; }
+  MCSection *getADASection() const { return ADASection; }
   MCSection *getIDRLSection() const { return IDRLSection; }
 
   // XCOFF specific sections
