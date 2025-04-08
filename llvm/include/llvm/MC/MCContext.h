@@ -270,21 +270,6 @@ private:
     }
   };
 
-  struct GOFFSectionKey {
-    std::string SectionName;
-    GOFF::ESDSymbolType SymbolType;
-
-    GOFFSectionKey(StringRef SectionName, GOFF::ESDSymbolType SymbolType)
-        : SectionName(SectionName), SymbolType(SymbolType) {}
-
-    bool operator<(const GOFFSectionKey &Other) const {
-      if (SymbolType == Other.SymbolType) {
-        return SectionName < Other.SectionName;
-      }
-      return SymbolType < Other.SymbolType;
-    }
-  };
-
   struct WasmSectionKey {
     std::string SectionName;
     StringRef GroupName;
@@ -338,7 +323,7 @@ private:
   StringMap<MCSectionMachO *> MachOUniquingMap;
   std::map<COFFSectionKey, MCSectionCOFF *> COFFUniquingMap;
   StringMap<MCSectionELF *> ELFUniquingMap;
-  std::map<GOFFSectionKey, MCSectionGOFF *> GOFFUniquingMap;
+  std::map<std::string, MCSectionGOFF *> GOFFUniquingMap;
   std::map<WasmSectionKey, MCSectionWasm *> WasmUniquingMap;
   std::map<XCOFFSectionKey, MCSectionXCOFF *> XCOFFUniquingMap;
   StringMap<MCSectionDXContainer *> DXCUniquingMap;
@@ -616,11 +601,9 @@ public:
                                                    unsigned EntrySize);
 
 private:
-  MCSectionGOFF *getGOFFSection(SectionKind Kind,
-                                GOFF::ESDSymbolType SymbolType, StringRef Name,
-                                GOFF::SDAttr SDAttributes,
-                                GOFF::EDAttr EDAttributes,
-                                GOFF::PRAttr PRAttributes, MCSection *Parent);
+  template <typename TAttr>
+  MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
+                                TAttr SDAttributes, MCSection *Parent);
 
 public:
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
