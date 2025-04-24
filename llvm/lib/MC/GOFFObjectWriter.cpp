@@ -443,6 +443,7 @@ public:
 
   ~TextStream() { flush(); }
 };
+} // namespace
 
 void TextStream::write_impl(const char *Ptr, size_t Size) {
   size_t WrittenLength = 0;
@@ -469,7 +470,6 @@ void TextStream::write_impl(const char *Ptr, size_t Size) {
     Offset += ToWriteLength;
   }
 }
-} // namespace
 
 void GOFFWriter::writeText(const MCSectionGOFF *Section) {
   // A BSS section contains only zeros, no need to write this.
@@ -504,7 +504,7 @@ uint64_t GOFFWriter::writeObject() {
   defineSymbols();
 
   for (const MCSection &Section : Asm)
-    writeText(static_cast<const MCSectionGOFF*>(&Section));
+    writeText(static_cast<const MCSectionGOFF *>(&Section));
 
   writeEnd();
 
