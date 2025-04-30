@@ -149,23 +149,23 @@ source_filename = "test.ll"
 
 ; Text record for the code section C_CODE64.
 ; The regular expression matches the lower byte of the length.
-; CHECK-NEXT: 0000500 03 10 00 00 [[C_CODE64]] 00 00 00 00 00 00 00 00
-; CHECK-NEXT: 0000510 00 00 00 00 00 00 00 {{..}} {{.*}}
+; CHECK-NEXT: 000500 03 10 00 00 [[C_CODE64]] 00 00 00 00 00 00 00 00
+; CHECK-NEXT: 000510 00 00 00 00 00 00 00 {{..}} {{.*}}
 
 ; Text record for the section .&ppa2.
-; CHECK:      0000550 03 10 00 00 [[PPA2]] 00 00 00 00 00 00 00 00
-; CHECK-NEXT: 0000560 00 00 00 00 00 00 00 {{..}} {{.*}}
+; CHECK:      000550 03 10 00 00 [[PPA2]] 00 00 00 00 00 00 00 00
+; CHECK-NEXT: 000560 00 00 00 00 00 00 00 {{..}} {{.*}}
 
 ; Text record for the section data.
 ; Length is 4, and the content is 0x2a = 42.
-; CHECK:      00005a0 03 10 00 00 [[DATA_PR]] 00 00 00 00 00 00 00 00
-; CHECK-NEXT: 00005b0 00 00 00 00 00 00 00 04 00 00 00 2a 00 00 00 00
+; CHECK:      0005a0 03 10 00 00 [[DATA_PR]] 00 00 00 00 00 00 00 00
+; CHECK-NEXT: 0005b0 00 00 00 00 00 00 00 04 00 00 00 2a 00 00 00 00
 
 ; There is no text record for section bss!
 
 ; Text record for the section B_IDRL.
-; CHECK:      00005f0 03 10 00 01 [[BIDRL]] 00 00 00 00 00 00 00 00
-; CHECK-NEXT: 0000600 00 00 00 00 00 00 00 {{..}} {{.*}}
+; CHECK:      0005f0 03 10 00 01 [[BIDRL]] 00 00 00 00 00 00 00 00
+; CHECK-NEXT: 000600 00 00 00 00 00 00 00 {{..}} {{.*}}
 
 ; End record.
 ; CHECK:      000640 03 40 00 00 00 00 00 00 00 00 00 00 00 00 00 00
