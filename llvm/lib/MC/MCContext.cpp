@@ -705,9 +705,10 @@ MCSectionGOFF *MCContext::getGOFFSection(SectionKind Kind, StringRef Name,
 
 MCSectionGOFF *MCContext::getGOFFSection(SectionKind Kind, StringRef Name,
                                          GOFF::EDAttr EDAttributes,
-                                         MCSection *Parent, bool IsVirtual) {
-  return getGOFFSection<GOFF::EDAttr>(Kind, Name, EDAttributes, Parent,
-                                      IsVirtual);
+                                         MCSection *Parent) {
+  return getGOFFSection<GOFF::EDAttr>(
+      Kind, Name, EDAttributes, Parent,
+      /*IsVirtual=*/EDAttributes.BindAlgorithm == GOFF::ESD_BA_Merge);
 }
 
 MCSectionGOFF *MCContext::getGOFFSection(SectionKind Kind, StringRef Name,

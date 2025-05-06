@@ -608,8 +608,7 @@ public:
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
                                 GOFF::SDAttr SDAttributes);
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
-                                GOFF::EDAttr EDAttributes, MCSection *Parent,
-                                bool IsVirtual);
+                                GOFF::EDAttr EDAttributes, MCSection *Parent);
   MCSectionGOFF *getGOFFSection(SectionKind Kind, StringRef Name,
                                 GOFF::PRAttr PRAttributes, MCSection *Parent);
 
