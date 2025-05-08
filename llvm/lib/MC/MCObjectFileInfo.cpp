@@ -571,6 +571,7 @@ void MCObjectFileInfo::initGOFFMCObjectFileInfo(const Triple &T) {
                    GOFF::ESD_LB_Initial, GOFF::ESD_RQ_0,
                    GOFF::ESD_ALIGN_Doubleword, 0},
       RootSDSection);
+
   MCSectionGOFF *PPA2ListEDSection = Ctx->getGOFFSection(
       SectionKind::getMetadata(), GOFF::CLASS_PPA2,
       GOFF::EDAttr{true, GOFF::RMODE, GOFF::ESD_NS_Parts,
