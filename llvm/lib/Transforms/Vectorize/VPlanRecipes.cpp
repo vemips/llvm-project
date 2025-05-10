@@ -37,6 +37,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
+#include "llvm/Transforms/Utils/LoopVersioning.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
 
@@ -491,16 +492,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return Builder.CreateCmp(getPredicate(), A, B, Name);
   }
   case Instruction::PHI: {
-    assert(getParent() ==
-               getParent()->getPlan()->getVectorLoopRegion()->getEntry() &&
-           "VPInstructions with PHI opcodes must be used for header phis only "
-           "at the moment");
-    BasicBlock *VectorPH =
-        State.CFG.VPBB2IRBB.at(getParent()->getCFGPredecessor(0));
-    Value *Start = State.get(getOperand(0), VPLane(0));
-    PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, Name);
-    Phi->addIncoming(Start, VectorPH);
-    return Phi;
+    llvm_unreachable("should be handled by VPPhi::execute");
   }
   case Instruction::Select: {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
@@ -1130,6 +1122,30 @@ void VPInstructionWithType::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+void VPPhi::execute(VPTransformState &State) {
+  State.setDebugLocFrom(getDebugLoc());
+  assert(getParent() ==
+             getParent()->getPlan()->getVectorLoopRegion()->getEntry() &&
+         "VPInstructions with PHI opcodes must be used for header phis only "
+         "at the moment");
+  BasicBlock *VectorPH = State.CFG.VPBB2IRBB.at(getIncomingBlock(0));
+  Value *Start = State.get(getIncomingValue(0), VPLane(0));
+  PHINode *Phi = State.Builder.CreatePHI(Start->getType(), 2, getName());
+  Phi->addIncoming(Start, VectorPH);
+  State.set(this, Phi, VPLane(0));
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+void VPPhi::print(raw_ostream &O, const Twine &Indent,
+                  VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = phi ";
+
+  printPhiOperands(O, SlotTracker);
+}
+#endif
+
 VPIRInstruction *VPIRInstruction ::create(Instruction &I) {
   if (auto *Phi = dyn_cast<PHINode>(&I))
     return new VPIRPhi(*Phi);
@@ -1228,6 +1244,17 @@ void VPIRPhi::print(raw_ostream &O, const Twine &Indent,
   }
 }
 #endif
+
+VPIRMetadata::VPIRMetadata(Instruction &I, LoopVersioning *LVer)
+    : VPIRMetadata(I) {
+  if (!LVer || !isa<LoadInst, StoreInst>(&I))
+    return;
+  const auto &[AliasScopeMD, NoAliasMD] = LVer->getNoAliasMetadataFor(&I);
+  if (AliasScopeMD)
+    Metadata.emplace_back(LLVMContext::MD_alias_scope, AliasScopeMD);
+  if (NoAliasMD)
+    Metadata.emplace_back(LLVMContext::MD_noalias, NoAliasMD);
+}
 
 void VPIRMetadata::applyMetadata(Instruction &I) const {
   for (const auto &[Kind, Node] : Metadata)
@@ -2590,6 +2617,7 @@ static void scalarizeInstruction(const Instruction *Instr,
   }
 
   RepRecipe->applyFlags(*Cloned);
+  RepRecipe->applyMetadata(*Cloned);
 
   if (auto DL = RepRecipe->getDebugLoc())
     State.setDebugLocFrom(DL);
@@ -2603,7 +2631,6 @@ static void scalarizeInstruction(const Instruction *Instr,
       InputLane = VPLane::getFirstLane();
     Cloned->setOperand(I.index(), State.get(Operand, InputLane));
   }
-  State.addNewMetadata(Cloned, Instr);
 
   // Place the cloned scalar in the new loop.
   State.Builder.Insert(Cloned);
@@ -2841,7 +2868,6 @@ InstructionCost VPWidenMemoryRecipe::computeCost(ElementCount VF,
 }
 
 void VPWidenLoadRecipe::execute(VPTransformState &State) {
-
   Type *ScalarDataTy = getLoadStoreType(&Ingredient);
   auto *DataTy = VectorType::get(ScalarDataTy, State.VF);
   const Align Alignment = getLoadStoreAlignment(&Ingredient);
@@ -2869,9 +2895,6 @@ void VPWidenLoadRecipe::execute(VPTransformState &State) {
   } else {
     NewLI = Builder.CreateAlignedLoad(DataTy, Addr, Alignment, "wide.load");
   }
-  // Add metadata to the load, but set the result to the reverse shuffle, if
-  // needed.
-  State.addNewMetadata(cast<Instruction>(NewLI), &Ingredient);
   applyMetadata(*cast<Instruction>(NewLI));
   if (Reverse)
     NewLI = Builder.CreateVectorReverse(NewLI, "reverse");
@@ -2900,7 +2923,6 @@ static Instruction *createReverseEVL(IRBuilderBase &Builder, Value *Operand,
 }
 
 void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
-
   Type *ScalarDataTy = getLoadStoreType(&Ingredient);
   auto *DataTy = VectorType::get(ScalarDataTy, State.VF);
   const Align Alignment = getLoadStoreAlignment(&Ingredient);
@@ -2931,7 +2953,6 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
   }
   NewLI->addParamAttr(
       0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
-  State.addNewMetadata(NewLI, &Ingredient);
   applyMetadata(*NewLI);
   Instruction *Res = NewLI;
   if (isReverse())
@@ -3006,7 +3027,6 @@ void VPWidenStoreRecipe::execute(VPTransformState &State) {
     NewSI = Builder.CreateMaskedStore(StoredVal, Addr, Alignment, Mask);
   else
     NewSI = Builder.CreateAlignedStore(StoredVal, Addr, Alignment);
-  State.addNewMetadata(NewSI, &Ingredient);
   applyMetadata(*NewSI);
 }
 
@@ -3019,7 +3039,6 @@ void VPWidenStoreRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
-
   VPValue *StoredValue = getStoredValue();
   bool CreateScatter = !isConsecutive();
   const Align Alignment = getLoadStoreAlignment(&Ingredient);
@@ -3053,7 +3072,6 @@ void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
   }
   NewSI->addParamAttr(
       1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
-  State.addNewMetadata(NewSI, &Ingredient);
   applyMetadata(*NewSI);
 }
 
