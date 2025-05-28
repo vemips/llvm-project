@@ -149,9 +149,9 @@ public:
 
   std::vector<Spelling::Value> getSpellings() const {
     std::vector<Spelling::Value> List;
-    llvm::transform(
-        Def->getValueAsListOfDefs("spellings"), std::back_inserter(List),
-        [](const Record *R) { return Spelling(R).get(); });
+    llvm::transform(Def->getValueAsListOfDefs("spellings"),
+                    std::back_inserter(List),
+                    [](const Record *R) { return Spelling(R).get(); });
     return List;
   }
 
