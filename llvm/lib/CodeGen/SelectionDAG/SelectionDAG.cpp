@@ -5465,13 +5465,11 @@ bool SelectionDAG::isGuaranteedNotToBeUndefOrPoison(SDValue Op,
     APInt DemandedSrcElts = DemandedElts;
     DemandedSrcElts.clearBits(Idx, Idx + NumSubElts);
 
-    if (!!DemandedSubElts &&
-        !isGuaranteedNotToBeUndefOrPoison(Sub, DemandedSubElts,
-                                          PoisonOnly, Depth + 1))
-        return false;
-    if (!!DemandedSrcElts &&
-        !isGuaranteedNotToBeUndefOrPoison(Src, DemandedSrcElts,
-                                          PoisonOnly, Depth + 1))
+    if (!!DemandedSubElts && !isGuaranteedNotToBeUndefOrPoison(
+                                 Sub, DemandedSubElts, PoisonOnly, Depth + 1))
+      return false;
+    if (!!DemandedSrcElts && !isGuaranteedNotToBeUndefOrPoison(
+                                 Src, DemandedSrcElts, PoisonOnly, Depth + 1))
       return false;
     return true;
   }
