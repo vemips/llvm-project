@@ -12144,8 +12144,7 @@ SDValue RISCVTargetLowering::lowerVECTOR_REVERSE(SDValue Op,
       // FIXME: This is a CONCAT_VECTORS.
       SDValue Res = DAG.getInsertSubvector(DL, DAG.getUNDEF(VecVT), Hi, 0,
                                            /*SkipUndef=*/true);
-      return DAG.getInsertSubvector(DL, Res, Lo,
-                                    LoVT.getVectorMinNumElements(),
+      return DAG.getInsertSubvector(DL, Res, Lo, LoVT.getVectorMinNumElements(),
                                     /*SkipUndef=*/true);
     }
 
