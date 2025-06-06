@@ -109,8 +109,7 @@ private:
                 "default calling conv should be encoded as 0");
 
   /// Stores the CallingConv that should be used for each libcall.
-  CallingConv::ID LibcallCallingConvs[RTLIB::UNKNOWN_LIBCALL] = {
-      CallingConv::C};
+  CallingConv::ID LibcallCallingConvs[RTLIB::UNKNOWN_LIBCALL] = {};
 
   /// The condition type that should be used to test the result of each of the
   /// soft floating-point comparison libcall against integer zero.
