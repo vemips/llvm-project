@@ -105,6 +105,9 @@ private:
   /// Stores the name each libcall.
   const char *LibcallRoutineNames[RTLIB::UNKNOWN_LIBCALL + 1] = {nullptr};
 
+  static_assert(static_cast<int>(CallingConv::C) == 0,
+                "default calling conv should be encoded as 0");
+
   /// Stores the CallingConv that should be used for each libcall.
   CallingConv::ID LibcallCallingConvs[RTLIB::UNKNOWN_LIBCALL] = {
       CallingConv::C};
@@ -115,8 +118,7 @@ private:
   // FIXME: This is only relevant for the handful of floating-point comparison
   // runtime calls; it's excessive to have a table entry for every single
   // opcode.
-  CmpInst::Predicate SoftFloatCompareLibcallPredicates[RTLIB::UNKNOWN_LIBCALL] =
-      {CmpInst::BAD_ICMP_PREDICATE};
+  CmpInst::Predicate SoftFloatCompareLibcallPredicates[RTLIB::UNKNOWN_LIBCALL];
 
   static bool darwinHasSinCosStret(const Triple &TT) {
     assert(TT.isOSDarwin() && "should be called with darwin triple");
