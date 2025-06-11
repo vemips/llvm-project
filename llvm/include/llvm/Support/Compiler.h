@@ -17,6 +17,17 @@
 
 #include "llvm/Config/llvm-config.h"
 
+// VEMIPS
+#define LLVM_BREAKOUT_VEMIPS(...) __VA_ARGS__
+#if LLVM_TARGET_VEMIPS
+# define LLVM_IF_TARGET_VEMIPS(...) __VA_ARGS__
+# define LLVM_IFELSE_TARGET_VEMIPS(y, n) LLVM_BREAKOUT_VEMIPS(y)
+#else
+# define LLVM_IF_TARGET_VEMIPS(...)
+# define LLVM_IFELSE_TARGET_VEMIPS(y, n) LLVM_BREAKOUT_VEMIPS(n)
+#endif
+// ~VEMIPS
+
 #include <stddef.h>
 
 #if defined(_MSC_VER)

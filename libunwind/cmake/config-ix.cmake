@@ -2,9 +2,12 @@ include(CMakePushCheckState)
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 include(CheckLibraryExists)
+include(CheckLibraryExistsEx)
 include(LLVMCheckCompilerLinkerFlag)
 include(CheckSymbolExists)
 include(CheckCSourceCompiles)
+
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fdata-sections -ffunction-sections -Wno-unused-command-line-argument -Wl,--gc-sections")
 
 # The compiler driver may be implicitly trying to link against libunwind, which
 # might not work if libunwind doesn't exist yet. Try to check if
@@ -14,7 +17,7 @@ llvm_check_compiler_linker_flag(C "--unwindlib=none" CXX_SUPPORTS_UNWINDLIB_EQ_N
 if (HAIKU)
   check_library_exists(root fopen "" LIBUNWIND_HAS_ROOT_LIB)
 else()
-  check_library_exists(c fopen "" LIBUNWIND_HAS_C_LIB)
+  check_library_exists_ex(c fopen "" stdio.h LIBUNWIND_HAS_ROOT_LIB)
 endif()
 
 if (NOT LIBUNWIND_USE_COMPILER_RT)

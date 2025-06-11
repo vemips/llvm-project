@@ -324,7 +324,11 @@ function(add_compiler_rt_runtime name type)
              ${CMAKE_C_COMPILE_OBJECT})
       set(compile_command_${libname} "${CMAKE_C_COMPILE_OBJECT}")
 
-      set(output_file_${libname} ${output_name_${libname}}${CMAKE_C_OUTPUT_EXTENSION})
+      if(type STREQUAL "OBJECT" AND NOT WIN32)
+        set(output_file_${libname} ${output_name_${libname}}.o)
+      else()
+        set(output_file_${libname} ${output_name_${libname}}${CMAKE_C_OUTPUT_EXTENSION})
+      endif()
       foreach(substitution ${substitutions})
         if(substitution STREQUAL "<CMAKE_C_COMPILER>")
           string(REPLACE "<CMAKE_C_COMPILER>" "${CMAKE_C_COMPILER} ${CMAKE_C_COMPILER_ARG1}"

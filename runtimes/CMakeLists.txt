@@ -1,6 +1,8 @@
 # This file handles building LLVM runtime sub-projects.
 cmake_minimum_required(VERSION 3.20.0)
 
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -nostdlib")
+
 # This file can be used in two ways: the bootstrapping build calls it from
 # llvm/runtimes/CMakeLists.txt where we reuse the build tree of the top-level
 # build or it can be directly invoked in this directory. In the latter case we
@@ -20,9 +22,14 @@ include(${LLVM_COMMON_CMAKE_UTILS}/Modules/CMakePolicy.cmake
 
 include(${LLVM_COMMON_CMAKE_UTILS}/Modules/LLVMVersion.cmake)
 
+set(OLD_CMAKE_TRY_COMPILE_TARGET_TYPE ${CMAKE_TRY_COMPILE_TARGET_TYPE})
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
 project(Runtimes C CXX ASM)
 set(LLVM_SUBPROJECT_TITLE "Runtimes")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE ${OLD_CMAKE_TRY_COMPILE_TARGET_TYPE})
 
 list(INSERT CMAKE_MODULE_PATH 0
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake"

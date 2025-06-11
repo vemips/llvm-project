@@ -20,6 +20,7 @@
 #include <__cxx03/cstdlib>
 #include <__cxx03/cwchar>
 
+#if 0
 inline _LIBCPP_HIDE_FROM_ABI long long strtoll_l(const char* __nptr, char** __endptr, int __base, locale_t) {
   return ::strtoll(__nptr, __endptr, __base);
 }
@@ -27,5 +28,6 @@ inline _LIBCPP_HIDE_FROM_ABI long long strtoll_l(const char* __nptr, char** __en
 inline _LIBCPP_HIDE_FROM_ABI unsigned long long strtoull_l(const char* __nptr, char** __endptr, int __base, locale_t) {
   return ::strtoull(__nptr, __endptr, __base);
 }
+#endif
 
 #endif // _LIBCPP___CXX03___LOCALE_LOCALE_BASE_API_MUSL_H

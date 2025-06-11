@@ -712,11 +712,15 @@ set(loongarch64_SOURCES
 )
 
 set(mips_SOURCES ${GENERIC_SOURCES})
+set(mipsisa32r6_SOURCES ${mips_SOURCES})
 set(mipsel_SOURCES ${mips_SOURCES})
+set(mipsisa32r6el_SOURCES ${mipsel_SOURCES})
 set(mips64_SOURCES ${GENERIC_TF_SOURCES}
                    ${mips_SOURCES})
+set(mipsisa64r6_SOURCES ${mips64_SOURCES})
 set(mips64el_SOURCES ${GENERIC_TF_SOURCES}
                      ${mips_SOURCES})
+set(mipsisa64r6el_SOURCES ${mips64el_SOURCES})
 
 set(nvptx64_SOURCES ${GENERIC_SOURCES})
 

@@ -4,9 +4,12 @@ include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
+include(CheckLibraryExistsEx)
 include(LLVMCheckCompilerLinkerFlag)
 include(CheckSymbolExists)
 include(TestBigEndian)
+
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fdata-sections -ffunction-sections -Wno-unused-command-line-argument -Wl,--gc-sections")
 
 # The compiler driver may be implicitly trying to link against libunwind.
 # This is normally ok (libcxx relies on an unwinder), but if libunwind is
@@ -17,7 +20,8 @@ include(TestBigEndian)
 # link with --unwindlib=none. Check if that option works.
 llvm_check_compiler_linker_flag(C "--unwindlib=none" CXX_SUPPORTS_UNWINDLIB_NONE_FLAG)
 
-check_library_exists(c fopen "" COMPILER_RT_HAS_LIBC)
+check_library_exists_ex(c fopen "" stdio.h COMPILER_RT_HAS_LIBC)
+
 if (COMPILER_RT_USE_BUILTINS_LIBRARY)
   include(HandleCompilerRT)
   find_compiler_rt_library(builtins COMPILER_RT_BUILTINS_LIBRARY
@@ -87,6 +91,8 @@ else()
 endif()
 
 # CodeGen options.
+set(OLD_CMAKE_TRY_COMPILE_TARGET_TYPE ${CMAKE_TRY_COMPILE_TARGET_TYPE})
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 check_c_compiler_flag(-ffreestanding         COMPILER_RT_HAS_FFREESTANDING_FLAG)
 check_c_compiler_flag(-fomit-frame-pointer   COMPILER_RT_HAS_OMIT_FRAME_POINTER_FLAG)
 check_c_compiler_flag(-std=c11               COMPILER_RT_HAS_STD_C11_FLAG)
@@ -185,6 +191,7 @@ check_symbol_exists(__func__ "" COMPILER_RT_HAS_FUNC_SYMBOL)
 check_cxx_compiler_flag(-nostdinc++ COMPILER_RT_HAS_NOSTDINCXX_FLAG)
 check_cxx_compiler_flag(-nostdlib++ COMPILER_RT_HAS_NOSTDLIBXX_FLAG)
 check_include_files("sys/auxv.h"    COMPILER_RT_HAS_AUXV)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE ${OLD_CMAKE_TRY_COMPILE_TARGET_TYPE})
 
 # Libraries.
 check_library_exists(dl dlopen "" COMPILER_RT_HAS_LIBDL)

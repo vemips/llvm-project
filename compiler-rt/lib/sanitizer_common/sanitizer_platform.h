@@ -25,7 +25,7 @@
 #  include <features.h>
 #endif
 
-#if defined(__linux__) || defined(__MUSL__)
+#if defined(__linux__)
 #  define SANITIZER_LINUX 1
 #else
 #  define SANITIZER_LINUX 0

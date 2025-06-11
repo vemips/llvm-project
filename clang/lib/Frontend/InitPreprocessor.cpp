@@ -1525,7 +1525,7 @@ static void InitializePredefinedMacros(const TargetInfo &TI,
     case llvm::Triple::MuslEABIHF:
     case llvm::Triple::MuslX32: {
       // TODO : Get MUSL version
-      static constexpr const int MuslVersionValues[3] = { VEMIPS_MUSL_VERSION_MAJOR, VEMIPS_MUSL_VERSION_MINOR, VEMIPS_MUSL_VERSION_PATCH };
+      static constexpr const int MuslVersionValues[3] = { 1, 2, 5 };
       Twine MuslVersion = Twine((MuslVersionValues[0] * 10'000) + (MuslVersionValues[1] * 100) + (MuslVersionValues[2]));
       Builder.defineMacro("__MUSL__", MuslVersion);
       Builder.defineMacro("__musl__", MuslVersion);

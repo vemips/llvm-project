@@ -958,7 +958,11 @@ PassBuilder::buildInlinerPipeline(OptimizationLevel Level,
 
   // When at O3 add argument promotion to the pass pipeline.
   // FIXME: It isn't at all clear why this should be limited to O3.
+#if LLVM_TARGET_VEMIPS
+  if (Level == OptimizationLevel::O2 || Level == OptimizationLevel::O3)
+#else
   if (Level == OptimizationLevel::O3)
+#endif
     MainCGPipeline.addPass(ArgumentPromotionPass());
 
   // Try to perform OpenMP specific optimizations. This is a (quick!) no-op if

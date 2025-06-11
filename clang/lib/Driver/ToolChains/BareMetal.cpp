@@ -263,6 +263,7 @@ void BareMetal::findMultilibs(const Driver &D, const llvm::Triple &Triple,
       Multilibs = Result.Multilibs;
     }
   }
+  // TODO : Implement MIPS multilibs
 }
 
 bool BareMetal::handlesTarget(const llvm::Triple &Triple) {
@@ -315,6 +316,15 @@ void BareMetal::AddClangSystemIncludeArgs(const ArgList &DriverArgs,
       llvm::sys::path::append(Dir, M.includeSuffix());
       llvm::sys::path::append(Dir, "include");
       addSystemInclude(DriverArgs, CC1Args, Dir.str());
+
+#ifdef LLVM_TARGET_VEMIPS
+      {
+        SmallString<128> Dir2(SysRoot);
+        llvm::sys::path::append(Dir2, M.includeSuffix());
+        llvm::sys::path::append(Dir2, "include_c");
+        addSystemInclude(DriverArgs, CC1Args, Dir2.str());
+      }
+#endif
     }
   }
 }
@@ -491,7 +501,45 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nostartfiles,
                    options::OPT_r)) {
+#if LLVM_TARGET_VEMIPS
+    const char *crt1 = nullptr;
+    if (!Args.hasArg(options::OPT_shared)) {
+      if (Args.hasArg(options::OPT_pg))
+        crt1 = "gcrt1.o";
+      else
+        crt1 = "crt1.o";
+    }
+    if (crt1)
+      CmdArgs.push_back(Args.MakeArgString(TC.GetFilePath(crt1)));
+
+    CmdArgs.push_back(Args.MakeArgString(TC.GetFilePath("crti.o")));
+#else
     CmdArgs.push_back(Args.MakeArgString(TC.GetFilePath("crt0.o")));
+#endif
+
+#if LLVM_TARGET_VEMIPS
+    if (TC.getTriple().hasEnvironment()) {
+      std::string P;
+      if (TC.GetRuntimeLibType(Args) == ToolChain::RLT_CompilerRT) {
+        std::string crtbegin = TC.getCompilerRT(Args, "crtbegin",
+                                                        ToolChain::FT_Object);
+        if (TC.getVFS().exists(crtbegin))
+          P = crtbegin;
+      }
+      if (P.empty()) {
+        const char *crtbegin; // clang_rt
+        if (Args.hasArg(options::OPT_shared))
+          crtbegin = "crtbeginS.o";
+        else
+          crtbegin = "crtbegin.o";
+        P = TC.GetFilePath(crtbegin);
+      }
+      CmdArgs.push_back(Args.MakeArgString(P));
+    }
+  #endif
+
+    // Add crtfastmath.o if available and fast math is enabled.
+    TC.addFastMathRuntimeIfAvailable(Args, CmdArgs);
   }
 
   Args.addAllArgs(CmdArgs, {options::OPT_L, options::OPT_T_Group,
@@ -513,11 +561,39 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back("-lm");
   }
 
+  // Silence warnings when linking C code with a C++ '-stdlib' argument.
+  Args.ClaimAllArgs(options::OPT_stdlib_EQ);
+
   if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nodefaultlibs)) {
     AddRunTimeLibs(TC, D, CmdArgs, Args);
 
     CmdArgs.push_back("-lc");
   }
+
+#if LLVM_TARGET_VEMIPS
+  if (!Args.hasArg(options::OPT_nostdlib, options::OPT_nostartfiles,
+                   options::OPT_r)) {
+    if (TC.getTriple().hasEnvironment()) {
+      std::string P;
+      if (TC.GetRuntimeLibType(Args) == ToolChain::RLT_CompilerRT) {
+        std::string crtend = TC.getCompilerRT(Args, "crtend",
+                                                        ToolChain::FT_Object);
+        if (TC.getVFS().exists(crtend))
+          P = crtend;
+      }
+      if (P.empty()) {
+          const char *crtend; // clang_rtf
+          if (Args.hasArg(options::OPT_shared))
+            crtend = "crtendS.o";
+          else
+            crtend = "crtend.o";
+          P = TC.GetFilePath(crtend);
+      }
+      CmdArgs.push_back(Args.MakeArgString(P));
+    }
+    CmdArgs.push_back(Args.MakeArgString(TC.GetFilePath("crtn.o")));
+  }
+#endif
 
   if (D.isUsingLTO()) {
     assert(!Inputs.empty() && "Must have at least one input.");

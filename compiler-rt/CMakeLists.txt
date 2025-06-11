@@ -19,9 +19,16 @@ endif()
 
 # Check if compiler-rt is built as a standalone project.
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR OR COMPILER_RT_STANDALONE_BUILD)
+
+  set(OLD_CMAKE_TRY_COMPILE_TARGET_TYPE ${CMAKE_TRY_COMPILE_TARGET_TYPE})
+  set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
   project(CompilerRT C CXX ASM)
   set(COMPILER_RT_STANDALONE_BUILD TRUE)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+  set(CMAKE_TRY_COMPILE_TARGET_TYPE ${OLD_CMAKE_TRY_COMPILE_TARGET_TYPE})
+
 endif()
 
 # Add path for custom compiler-rt modules.
@@ -45,6 +52,8 @@ include(CMakeDependentOption)
 include(GetDarwinLinkerVersion)
 
 include(CheckCXXCompilerFlag)
+
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -nostdlib")
 
 # Check if we can compile with --no-default-config, or if that omits a config
 # file that is essential for the toolchain to work properly.
@@ -523,7 +532,7 @@ append_list_if(COMPILER_RT_HAS_WD4391_FLAG /wd4391 SANITIZER_COMMON_CFLAGS)
 append_list_if(COMPILER_RT_HAS_WD4722_FLAG /wd4722 SANITIZER_COMMON_CFLAGS)
 append_list_if(COMPILER_RT_HAS_WD4800_FLAG /wd4800 SANITIZER_COMMON_CFLAGS)
 
-append_list_if(MINGW -fms-extensions SANITIZER_COMMON_CFLAGS)
+  append_list_if(MINGW -fms-extensions SANITIZER_COMMON_CFLAGS)
 
 # When lsan scans the stack for detecting reachable pointers, it's possible for
 # a leaked pointer, which was pushed to the stack on an earlier function call,

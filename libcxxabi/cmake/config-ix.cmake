@@ -1,10 +1,14 @@
 include(CMakePushCheckState)
 include(CheckLibraryExists)
+include(CheckLibraryExistsEx)
 include(CheckCCompilerFlag)
 include(CheckCXXCompilerFlag)
 include(CheckCSourceCompiles)
 
-check_library_exists(c fopen "" LIBCXXABI_HAS_C_LIB)
+set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fdata-sections -ffunction-sections -Wno-unused-command-line-argument -Wl,--gc-sections")
+
+check_library_exists_ex(c fopen "" stdio.h LIBCXXABI_HAS_C_LIB)
+
 if (NOT LIBCXXABI_USE_COMPILER_RT)
   if (ANDROID)
     check_library_exists(gcc __gcc_personality_v0 "" LIBCXXABI_HAS_GCC_LIB)
@@ -83,7 +87,7 @@ endif ()
 # Check compiler pragmas
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   cmake_push_check_state()
-  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -Werror=unknown-pragmas")
+  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fdata-sections -ffunction-sections -Wl,--gc-sections -Werror=unknown-pragmas")
   check_c_source_compiles("
 #pragma comment(lib, \"c\")
 int main(void) { return 0; }

@@ -70,20 +70,28 @@ set(mips_SOURCES
   xray_trampoline_mips.S
   )
 
+set(mipsisa32r6_SOURCES ${mips_SOURCES})
+
 set(mipsel_SOURCES
   xray_mips.cpp
   xray_trampoline_mips.S
   )
+
+set(mipsisa32r6el_SOURCES ${mipsel_SOURCES})
 
 set(mips64_SOURCES
   xray_mips64.cpp
   xray_trampoline_mips64.S
   )
 
+set(mipsisa64r6_SOURCES ${mips64_SOURCES})
+
 set(mips64el_SOURCES
   xray_mips64.cpp
   xray_trampoline_mips64.S
   )
+
+set(mipsisa64r6el_SOURCES ${mips64el_SOURCES})
 
 set(powerpc64le_SOURCES
   xray_powerpc64.cpp
@@ -421,7 +429,7 @@ else() # not Apple
     if (${arch} IN_LIST XRAY_DSO_SUPPORTED_ARCH)
       add_compiler_rt_object_libraries(RTXrayDSO
         ARCHS ${arch}
-        SOURCES ${XRAY_DSO_SOURCES} ${${arch}_DSO_SOURCES} 
+        SOURCES ${XRAY_DSO_SOURCES} ${${arch}_DSO_SOURCES}
         ADDITIONAL_HEADERS ${XRAY_IMPL_HEADERS}
         CFLAGS ${XRAY_CFLAGS}
         DEFS ${XRAY_COMMON_DEFINITIONS_DSO}

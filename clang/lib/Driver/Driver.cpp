@@ -190,8 +190,12 @@ std::string Driver::GetResourcesPath(StringRef BinaryPath) {
     P = llvm::sys::path::parent_path(Dir);
     // This search path is also created in the COFF driver of lld, so any
     // changes here also needs to happen in lld/COFF/Driver.cpp
+#if LLVM_TARGET_VEMIPS
+    //llvm::sys::path::append(P, CLANG_INSTALL_LIBDIR_BASENAME);
+#else
     llvm::sys::path::append(P, CLANG_INSTALL_LIBDIR_BASENAME, "clang",
                             CLANG_VERSION_MAJOR_STRING);
+#endif
   }
 
   return std::string(P);
@@ -549,6 +553,10 @@ DerivedArgList *Driver::TranslateInputArgs(const InputArgList &Args) const {
   // Enforce -static if -miamcu is present.
   if (Args.hasFlag(options::OPT_miamcu, options::OPT_mno_iamcu, false))
     DAL->AddFlagArg(nullptr, Opts.getOption(options::OPT_static));
+#if LLVM_TARGET_VEMIPS
+  else
+    DAL->AddFlagArg(nullptr, Opts.getOption(options::OPT_static));
+#endif
 
 // Add a default value of -mlinker-version=, if one was given and the user
 // didn't specify one.

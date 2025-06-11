@@ -11,6 +11,8 @@ include(GetClangResourceDir)
 include(ExtendPath)
 include(CompilerRTDarwinUtils)
 
+set(TEST_COMPILE_ONLY On)
+
 check_include_file(unwind.h HAVE_UNWIND_H)
 
 # Used by sanitizer_common and tests.
@@ -257,7 +259,7 @@ macro(test_targets)
 
       # FIXME: Ideally, we would build the N32 library too.
       if("${COMPILER_RT_MIPS_EL}" AND ("${COMPILER_RT_MIPS32R6}"))
-        test_target_arch(mipsel "" "-mips32r6" "-mabi=32" "-D_LARGEFILE_SOURCE=1" "-D_FILE_OFFSET_BITS=64")
+        test_target_arch(mipsisa32r6el "" "-mips32r6" "-mabi=32" "-D_LARGEFILE_SOURCE=1" "-D_FILE_OFFSET_BITS=64" "-nostdlib")
       elseif("${COMPILER_RT_MIPS64R6}")
         #test_target_arch(mips64el "" "-mips64r6" "-mabi=64")
       elseif("${COMPILER_RT_MIPS_EL}")

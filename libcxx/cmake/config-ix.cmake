@@ -93,7 +93,7 @@ endif ()
 # Check compiler pragmas
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   cmake_push_check_state()
-  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -Werror=unknown-pragmas")
+  set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fdata-sections -ffunction-sections -Wl,--gc-sections -Werror=unknown-pragmas")
   check_c_source_compiles("
 #pragma comment(lib, \"c\")
 int main(void) { return 0; }

@@ -46,7 +46,11 @@ public:
   bool isPICDefaultForced() const override { return false; }
   bool SupportsProfiling() const override { return false; }
 
+#if LLVM_TARGET_VEMIPS
+  StringRef getOSLibName() const override { return "generic"; }
+#else
   StringRef getOSLibName() const override { return "baremetal"; }
+#endif
 
   RuntimeLibType GetDefaultRuntimeLibType() const override {
     return ToolChain::RLT_CompilerRT;
