@@ -118,6 +118,10 @@ function(add_lldb_library name)
       ${pass_NO_INSTALL_RPATH}
     )
 
+    if (WIN32 AND PARAM_SHARED)
+      target_link_libraries(${name} PRIVATE Bcrypt)
+    endif()
+
     if(CLANG_LINK_CLANG_DYLIB)
       target_link_libraries(${name} PRIVATE clang-cpp)
     else()

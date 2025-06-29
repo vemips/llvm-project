@@ -35,9 +35,9 @@ def compress_debug_sections
     : Joined<["--"], "compress-debug-sections=">,
       MetaVarName<"format">,
       HelpText<"Compress DWARF debug sections using specified format. Supported "
-               "formats: zlib, zstd. Select zlib if <format> is omitted">;
+               "formats: zlib, zstd. Select zstd if <format> is omitted">;
 def : Flag<["--"], "compress-debug-sections">, Alias<compress_debug_sections>,
-      AliasArgs<["zlib"]>;
+      AliasArgs<["zstd"]>;
 def decompress_debug_sections : Flag<["--"], "decompress-debug-sections">,
                                 HelpText<"Decompress DWARF debug sections">;
 defm compress_sections
@@ -70,7 +70,7 @@ defm redefine_symbols
          "contains two symbols per line separated with whitespace and may "
          "contain comments beginning with '#'. Leading and trailing "
          "whitespace is stripped from each line. May be repeated to read "
-         "symbols from many files">,         
+         "symbols from many files">,
       MetaVarName<"filename">;
 
 defm only_section : Eq<"only-section", "Remove all but <section>">,
@@ -255,7 +255,7 @@ defm prefix_alloc_sections
 defm set_start : Eq<"set-start", "Set the start address to <addr>. Overrides "
                     "any previous --change-start or --adjust-start values">,
                  MetaVarName<"addr">;
-defm change_start : Eq<"change-start", "Add <incr> to the start address. Can be "                        
+defm change_start : Eq<"change-start", "Add <incr> to the start address. Can be "
                        "specified multiple times, all values will be applied "
                        "cumulatively">,
                     MetaVarName<"incr">;

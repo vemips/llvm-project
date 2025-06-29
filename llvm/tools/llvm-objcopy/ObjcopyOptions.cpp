@@ -864,7 +864,7 @@ objcopy::parseObjcopyOptions(ArrayRef<const char *> ArgsArr,
     Config.CompressionType = StringSwitch<DebugCompressionType>(A->getValue())
                                  .Case("zlib", DebugCompressionType::Zlib)
                                  .Case("zstd", DebugCompressionType::Zstd)
-                                 .Default(DebugCompressionType::None);
+                                 .Default(LLVM_IFELSE_TARGET_VEMIPS(DebugCompressionType::Zstd, DebugCompressionType::None));
     if (Config.CompressionType == DebugCompressionType::None) {
       return createStringError(
           errc::invalid_argument,
