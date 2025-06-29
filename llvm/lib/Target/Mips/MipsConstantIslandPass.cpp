@@ -64,7 +64,7 @@ STATISTIC(NumUBrFixed,   "Number of uncond branches fixed");
 
 // FIXME: This option should be removed once it has received sufficient testing.
 static cl::opt<bool>
-AlignConstantIslands("mips-align-constant-islands", cl::Hidden, cl::init(true),
+AlignConstantIslands("mips-align-constant-islands", cl::Hidden, cl::init(LLVM_IFELSE_TARGET_VEMIPS(false, true)),
           cl::desc("Align constant islands in code"));
 
 // Rather than do make check tests with huge amounts of code, we force

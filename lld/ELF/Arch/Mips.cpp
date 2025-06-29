@@ -44,7 +44,12 @@ public:
 
 template <class ELFT> MIPS<ELFT>::MIPS(Ctx &ctx) : TargetInfo(ctx) {
   gotPltHeaderEntriesNum = 2;
+#if LLVM_TARGET_VEMIPS
+  defaultCommonPageSize = 4;
+  defaultMaxPageSize = 4;
+#else
   defaultMaxPageSize = 65536;
+#endif
   pltEntrySize = 16;
   pltHeaderSize = 32;
   copyRel = R_MIPS_COPY;

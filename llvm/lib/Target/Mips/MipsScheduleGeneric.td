@@ -13,6 +13,8 @@
 // develop new schedule models.
 //
 //===----------------------------------------------------------------------===//
+
+// VEMIPS : TODO implement platform-specific values
 def MipsGenericModel : SchedMachineModel {
   int IssueWidth = 1;
   int MicroOpBufferSize = 0;
@@ -21,7 +23,8 @@ def MipsGenericModel : SchedMachineModel {
   int LoadLatency = 2;
   int MispredictPenalty = 4;
 
-  int HighLatency = 37;
+  // VEMIPS TODO : orig 37
+  int HighLatency = 4;
   list<Predicate> UnsupportedFeatures = [];
 
   let CompleteModel = 1;

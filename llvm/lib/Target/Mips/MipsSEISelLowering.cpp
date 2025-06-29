@@ -52,8 +52,9 @@ using namespace llvm;
 #define DEBUG_TYPE "mips-isel"
 
 static cl::opt<bool>
+// VEMIPS TODO : Validate that tail calls work
 UseMipsTailCalls("mips-tail-calls", cl::Hidden,
-                    cl::desc("MIPS: permit tail calls."), cl::init(false));
+                    cl::desc("MIPS: permit tail calls."), cl::init(LLVM_IFELSE_TARGET_VEMIPS(true, false)));
 
 static cl::opt<bool> NoDPLoadStore("mno-ldc1-sdc1", cl::init(false),
                                    cl::desc("Expand double precision loads and "

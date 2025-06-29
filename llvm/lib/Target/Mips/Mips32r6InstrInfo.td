@@ -1012,6 +1012,8 @@ def : MipsInstAlias<"evp", (EVP ZERO), 0>, ISA_MIPS32R6;
 let AdditionalPredicates = [NotInMicroMips] in {
 def : MipsInstAlias<"sdbbp", (SDBBP_R6 0)>, ISA_MIPS32R6;
 def : MipsInstAlias<"sigrie", (SIGRIE 0)>, ISA_MIPS32R6;
+def : MipsInstAlias<"j $rs", (JALR ZERO, GPR32Opnd:$rs), 1>,
+      ISA_MIPS32R6, GPR_32;
 def : MipsInstAlias<"jr $rs", (JALR ZERO, GPR32Opnd:$rs), 1>,
       ISA_MIPS32R6, GPR_32;
 }
@@ -1213,4 +1215,3 @@ let AdditionalPredicates = [NotInMips16Mode, NotInMicroMips,
                                                              GPR32Opnd>,
                                     ISA_MIPS32R6;
 }
-
